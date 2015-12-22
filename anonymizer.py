@@ -5,7 +5,10 @@ run semi_partition with given parameters
 # !/usr/bin/env python
 # coding=utf-8
 from algorithm.semi_partition import semi_partition
+from algorithm.semi_partition_missing import semi_partition_missing
 from algorithm.mondrian import mondrian
+
+
 from algorithm.Separation_Gen import Separation_Gen
 from algorithm.anatomizer import anatomizer
 from utils.read_adult_data import read_data as read_adult
@@ -14,11 +17,12 @@ from utils.read_informs_data import read_data as read_informs
 from utils.read_informs_data import read_tree as read_informs_tree
 import sys, copy, random
 
-DATA_SELECT = 'I'
+DATA_SELECT = 'i'
+DEFAULT_K = 10
 # sys.setrecursionlimit(50000)
 
 
-def get_result_one(alg, att_trees, data, k=10):
+def get_result_one(alg, att_trees, data, k=DEFAULT_K):
     "run anonymization algorithm for one time, with k=10"
     print "K=%d" % k
     data_back = copy.deepcopy(data)
@@ -48,7 +52,7 @@ def get_result_k(alg, att_trees, data):
     print "All Running time", all_rtime
 
 
-def get_result_dataset(alg, att_trees, data, k=10, n=10):
+def get_result_dataset(alg, att_trees, data, k=DEFAULT_K, n=10):
     """
     fix k and QI, while changing size of dataset
     n is the proportion nubmber.
@@ -88,7 +92,7 @@ def get_result_dataset(alg, att_trees, data, k=10, n=10):
     print "All Running time", all_rtime
 
 
-def get_result_qi(alg, att_trees, data, k=10):
+def get_result_qi(alg, att_trees, data, k=DEFAULT_K):
     """
     change nubmber of QI, whle fixing k and size of dataset
     """
@@ -109,6 +113,82 @@ def get_result_qi(alg, att_trees, data, k=10):
     print "All Running time", all_rtime
 
 
+def get_result_missing(alg, att_trees, data, k=DEFAULT_K, n=10):
+    """
+    change nubmber of missing, whle fixing k, qi and size of dataset
+    """
+    data_back = copy.deepcopy(data)
+    length = len(data_back)
+    qi_len = len(data[0]) - 1
+    raw_missing = raw_missing_record = 0
+    print "K=%d" % k
+    for record in data:
+        flag = False
+        for value in record:
+            if value == '?' or value == '*':
+                raw_missing += 1
+                flag = True
+        if flag:
+            raw_missing_record += 1
+    # print "Missing Percentage %.2f" % (raw_missing * 100.0 / (length * qi_len)) + '%%'
+    # each evaluation varies add 5% missing values
+    check_percentage = [5, 10, 25, 50, 75]
+    datasets = []
+    for p in check_percentage:
+        joint = int(0.01 * p * length * qi_len) - raw_missing
+        datasets.append(joint)
+    all_ncp = []
+    all_rtime = []
+    all_pollution = []
+    for i, joint in enumerate(datasets):
+        ncp = rtime = pollution = 0.0
+        for j in range(n):
+            gen_missing_dataset(data, joint)
+            missing_rate(data)
+            _, eval_result = semi_partition(att_trees, data, k)
+            data = copy.deepcopy(data_back)
+            ncp += eval_result[0]
+            rtime += eval_result[1]
+            pollution += eval_result[2]
+        ncp /= n
+        rtime /= n
+        pollution /= n
+        if __DEBUG:
+            print "check_percentage", check_percentage[i]
+            print "Add missing %d" % joint
+            print "Average NCP %0.2f" % ncp + "%"
+            print "Running time %0.2f" % rtime + "seconds"
+            print "Missing Pollution = %.2f" % pollution + "%"
+            print '#' * 30
+        all_ncp.append(round(ncp, 2))
+        all_rtime.append(round(rtime, 2))
+        all_pollution.append(round(pollution, 2))
+    print "All NCP", all_ncp
+    print "All Running time", all_rtime
+    print "Missing Pollution", all_pollution
+    print '#' * 30
+
+
+def gen_missing_dataset(data, joint):
+    """
+    add missing values to dataset
+    """
+    length = len(data)
+    qi_len = len(data[0]) - 1
+    while(joint > 0):
+        pos = random.randrange(length)
+        for i in range(qi_len):
+            col = random.randrange(qi_len)
+            if data[pos][col] == '?' or data[pos][col] == '*':
+                continue
+            else:
+                data[pos][col] = '?'
+                break
+        else:
+            continue
+        joint -= 1
+
+
 if __name__ == '__main__':
     FLAG = ''
     LEN_ARGV = len(sys.argv)
@@ -120,11 +200,11 @@ if __name__ == '__main__':
     k = 10
     if DATA_SELECT == 'i':
         RAW_DATA = read_informs()
-        ATT_TREES = read_informs_tree()
+        ATT_TREES = read_informs_tree(1)
     else:
         RAW_DATA = read_adult()
         ATT_TREES = read_adult_tree()
-    ALG = mondrian
+    ALG = Separation_Gen
     print '#' * 30
     if DATA_SELECT == 'a':
         print "Adult data"

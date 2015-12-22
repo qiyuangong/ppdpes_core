@@ -29,7 +29,7 @@ gl_SA_index = -1
 __DEBUG = False
 
 
-def read_data():
+def read_data(missing=True):
     """
     read microda for *.txt and return read data
     """
@@ -45,7 +45,9 @@ def read_data():
         line = line.strip()
         # remove empty and incomplete lines
         # only 30162 records will be kept
-        if len(line) == 0 or '?' in line:
+        if len(line) == 0:
+            continue
+        if missing and '?' in line:
             continue
         # remove double spaces
         line = line.replace(' ', '')
@@ -64,7 +66,7 @@ def read_data():
     # pickle numeric attributes and get NumRange
     for i in range(QI_num):
         if IS_CAT[i] is False:
-            static_file = open('data/adult_' + ATT_NAMES[QI_INDEX[i]] + '_static.pickle', 'wb')
+            static_file = open('gh/adult_' + ATT_NAMES[QI_INDEX[i]] + '_static.pickle', 'wb')
             sort_value = list(numeric_dict[i].keys())
             sort_value.sort(cmp=cmp_str)
             pickle.dump((numeric_dict[i], sort_value), static_file)
@@ -93,7 +95,7 @@ def read_pickle_file(att_name):
     return numrange object
     """
     try:
-        static_file = open('data/adult_' + att_name + '_static.pickle', 'rb')
+        static_file = open('gh/adult_' + att_name + '_static.pickle', 'rb')
         (numeric_dict, sort_value) = pickle.load(static_file)
     except:
         print "Pickle file not exists!!"

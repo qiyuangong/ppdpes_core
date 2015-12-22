@@ -19,10 +19,11 @@ CONDITION_ATT = ['DUID', 'DUPERSID', 'ICD9CODX', 'year']
 # 5 relational attributes and 1 transaction attribute are selected (according to Poulis's paper)
 # DOBMM DOBYY RACEX, EDUCYEAR, incom
 QI_INDEX = [3, 4, 6, 13, 16]
-IS_CAT = [True, True, True, True, False]
+SA_INDEX = 2
+IS_CAT = [True, True, True, True, False, True]
 
 
-def read_tree():
+def read_tree(flag=0):
     """
     read tree from data/tree_*.txt, store them in att_tree
     """
@@ -30,6 +31,8 @@ def read_tree():
     att_trees = []
     for t in QI_INDEX:
         att_names.append(USER_ATT[t])
+    if flag > 0:
+        att_names.append(CONDITION_ATT[SA_INDEX])
     for i in range(len(att_names)):
         if IS_CAT[i]:
             att_trees.append(read_tree_file(att_names[i]))
@@ -44,7 +47,7 @@ def read_pickle_file(att_name):
     return numrange object
     """
     try:
-        static_file = open('data/informs_' + att_name + '_static.pickle', 'rb')
+        static_file = open('gh/informs_' + att_name + '_static.pickle', 'rb')
         (numeric_dict, sort_value) = pickle.load(static_file)
         static_file.close()
         result = NumRange(sort_value, numeric_dict)
@@ -59,7 +62,7 @@ def read_tree_file(treename):
     """
     leaf_to_path = {}
     att_tree = {}
-    prefix = 'data/informs_'
+    prefix = 'gh/informs_'
     postfix = ".txt"
     treefile = open(prefix + treename + postfix, 'rU')
     att_tree['*'] = GenTree('*')
@@ -119,7 +122,7 @@ def read_data(flag=0):
             if IS_CAT[j] is False:
                 try:
                     numeric_dict[j][row[index]] += 1
-                except:
+                except KeyError:
                     numeric_dict[j][row[index]] = 1
     conditiondata = {}
     for i, line in enumerate(conditionfile):
@@ -132,7 +135,7 @@ def read_data(flag=0):
         row[2] = row[2][1:-1]
         try:
             conditiondata[row[1]].append(row)
-        except:
+        except KeyError:
             conditiondata[row[1]] = [row]
     hashdata = {}
     for k, v in userdata.iteritems():
@@ -152,7 +155,7 @@ def read_data(flag=0):
             # ingnore duplicate values
             temp = set()
             for t in conditiondata[k]:
-                temp.add(t[2])
+                temp.add(t[SA_INDEX])
             hashdata[k] = []
             for i in range(QI_num):
                 index = QI_INDEX[i]
