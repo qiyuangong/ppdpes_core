@@ -4,27 +4,30 @@ run semi_partition with given parameters
 
 # !/usr/bin/env python
 # coding=utf-8
-from semi_partition import semi_partition
+from algorithm.semi_partition import semi_partition
+from algorithm.mondrian import mondrian
+from algorithm.Separation_Gen import Separation_Gen
+from algorithm.anatomizer import anatomizer
 from utils.read_adult_data import read_data as read_adult
 from utils.read_adult_data import read_tree as read_adult_tree
 from utils.read_informs_data import read_data as read_informs
 from utils.read_informs_data import read_tree as read_informs_tree
 import sys, copy, random
 
-DATA_SELECT = 'a'
+DATA_SELECT = 'I'
 # sys.setrecursionlimit(50000)
 
 
-def get_result_one(att_trees, data, k=10):
-    "run semi_partition for one time, with k=10"
+def get_result_one(alg, att_trees, data, k=10):
+    "run anonymization algorithm for one time, with k=10"
     print "K=%d" % k
     data_back = copy.deepcopy(data)
-    _, eval_result = semi_partition(att_trees, data, k)
+    _, eval_result = alg(att_trees, data, k)
     print "NCP %0.2f" % eval_result[0] + "%"
     print "Running time %0.2f" % eval_result[1] + "seconds"
 
 
-def get_result_k(att_trees, data):
+def get_result_k(alg, att_trees, data):
     """
     change k, whle fixing QD and size of dataset
     """
@@ -35,7 +38,7 @@ def get_result_k(att_trees, data):
     for k in [2, 5, 10, 25, 50, 100]:
         print '#' * 30
         print "K=%d" % k
-        _, eval_result = semi_partition(att_trees, data, k)
+        _, eval_result = alg(att_trees, data, k)
         data = copy.deepcopy(data_back)
         print "NCP %0.2f" % eval_result[0] + "%"
         all_ncp.append(round(eval_result[0], 2))
@@ -45,7 +48,7 @@ def get_result_k(att_trees, data):
     print "All Running time", all_rtime
 
 
-def get_result_dataset(att_trees, data, k=10, n=10):
+def get_result_dataset(alg, att_trees, data, k=10, n=10):
     """
     fix k and QI, while changing size of dataset
     n is the proportion nubmber.
@@ -69,7 +72,7 @@ def get_result_dataset(att_trees, data, k=10, n=10):
         print "size of dataset %d" % pos
         for j in range(n):
             temp = random.sample(data, pos)
-            result, eval_result = semi_partition(att_trees, temp, k)
+            result, eval_result = alg(att_trees, temp, k)
             ncp += eval_result[0]
             rtime += eval_result[1]
             data = copy.deepcopy(data_back)
@@ -85,7 +88,7 @@ def get_result_dataset(att_trees, data, k=10, n=10):
     print "All Running time", all_rtime
 
 
-def get_result_qi(att_trees, data, k=10):
+def get_result_qi(alg, att_trees, data, k=10):
     """
     change nubmber of QI, whle fixing k and size of dataset
     """
@@ -96,7 +99,7 @@ def get_result_qi(att_trees, data, k=10):
     for i in reversed(range(1, ls)):
         print '#' * 30
         print "Number of QI=%d" % i
-        _, eval_result = semi_partition(att_trees, data, k, i)
+        _, eval_result = alg(att_trees, data, k, i)
         data = copy.deepcopy(data_back)
         print "NCP %0.2f" % eval_result[0] + "%"
         all_ncp.append(round(eval_result[0], 2))
@@ -121,6 +124,7 @@ if __name__ == '__main__':
     else:
         RAW_DATA = read_adult()
         ATT_TREES = read_adult_tree()
+    ALG = mondrian
     print '#' * 30
     if DATA_SELECT == 'a':
         print "Adult data"
@@ -128,23 +132,23 @@ if __name__ == '__main__':
         print "INFORMS data"
     print '#' * 30
     if FLAG == 'k':
-        get_result_k(ATT_TREES, RAW_DATA)
+        get_result_k(ALG, ATT_TREES, RAW_DATA)
     elif FLAG == 'qi':
-        get_result_qi(ATT_TREES, RAW_DATA)
+        get_result_qi(ALG, ATT_TREES, RAW_DATA)
     elif FLAG == 'data':
-        get_result_dataset(ATT_TREES, RAW_DATA)
+        get_result_dataset(ALG, ATT_TREES, RAW_DATA)
     elif FLAG == 'one':
         if LEN_ARGV > 3:
             k = int(sys.argv[3])
-            get_result_one(ATT_TREES, RAW_DATA, k)
+            get_result_one(ALG, ATT_TREES, RAW_DATA, k)
         else:
-            get_result_one(ATT_TREES, RAW_DATA)
+            get_result_one(ALG, ATT_TREES, RAW_DATA)
     elif FLAG == '':
-        get_result_one(ATT_TREES, RAW_DATA)
+        get_result_one(ALG, ATT_TREES, RAW_DATA)
     else:
         print "Usage: python anonymizer [a | i] [k | qi | data | one]"
         print "a: adult dataset, 'i': INFORMS ataset"
         print "K: varying k, qi: varying qi numbers, data: varying size of dataset, \
                 one: run only once"
     # anonymized dataset is stored in result
-    print "Finish Semi_Partition!!"
+    print "Finish Anonymization!!"

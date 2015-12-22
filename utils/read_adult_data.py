@@ -107,7 +107,7 @@ def read_tree_file(treename):
     """
     leaf_to_path = {}
     att_tree = {}
-    prefix = 'data/adult_'
+    prefix = 'gh/adult_'
     postfix = ".txt"
     treefile = open(prefix + treename + postfix, 'rU')
     att_tree['*'] = GenTree('*')

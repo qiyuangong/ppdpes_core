@@ -1,8 +1,5 @@
-Semi_Partition
+PPDP_Algorithm
 ===========================
-Semi_Partition is a Top-down greedy data anonymization algorithm for relational dataset. It's more efficient than Mondrian, which is proposed by Kristen LeFevre in his papers[1]. 
-
-This repository is an **open source python implementation for Semi_Partition**. I implement this algorithm in python for further study.
 
 ### Motivation 
 Researches on data privacy have lasted for more than ten years, lots of great papers have been published. However, only a few open source projects are available on Internet [2-3], most open source projects are using algorithms proposed before 2004! Fewer projects have been used in real life. Worse more, most people even don't hear about it. Such a tragedy! 
@@ -42,4 +39,4 @@ My Implementation is based on Python 2.7 (not Python 3.0). Please make sure your
 by Qiyuan Gong
 qiyuangong@gmail.com
 
-2015-1-21
+2015-12-22

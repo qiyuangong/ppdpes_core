@@ -166,7 +166,7 @@ def read_data(flag=0):
         data.append(v)
     for i in range(QI_num):
         if IS_CAT[i] is False:
-            static_file = open('data/informs_' + USER_ATT[QI_INDEX[i]] + '_static.pickle', 'wb')
+            static_file = open('gh/informs_' + USER_ATT[QI_INDEX[i]] + '_static.pickle', 'wb')
             sort_value = list(numeric_dict[i].keys())
             sort_value.sort(cmp=cmp_str)
             pickle.dump((numeric_dict[i], sort_value), static_file)
