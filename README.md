@@ -24,6 +24,11 @@ My Implementation is based on Python 2.7 (not Python 3.0). Please make sure your
 	# run Mondrian with K=20
 	python anonymized.py 20
 
+3) Run unit test in root dir with CLI.
+
+    # run all test cases ending with "_test.py" in test dir
+    python -m unittest discover . "*_test.py"
+
 
 
 ## For more information:

@@ -6,7 +6,6 @@ main module of partition
 
 import pdb
 from models.gentree import GenTree
-from models.bucket import Bucket
 from itertools import combinations
 from utils.utility import list_to_str
 

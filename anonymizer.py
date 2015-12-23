@@ -35,7 +35,7 @@ def get_result_one(alg, att_trees, data, k=DEFAULT_K):
 
 def get_result_k(alg, att_trees, data):
     """
-    change k, whle fixing QD and size of dataset
+    change k, while fixing QD and size of dataset
     """
     data_back = copy.deepcopy(data)
     all_ncp = []
@@ -57,7 +57,7 @@ def get_result_k(alg, att_trees, data):
 def get_result_dataset(alg, att_trees, data, k=DEFAULT_K, n=10):
     """
     fix k and QI, while changing size of dataset
-    n is the proportion nubmber.
+    n is the proportion number.
     """
     data_back = copy.deepcopy(data)
     length = len(data_back)
@@ -117,7 +117,7 @@ def get_result_qi(alg, att_trees, data, k=DEFAULT_K):
 
 def get_result_missing(alg, att_trees, data, k=DEFAULT_K, n=10):
     """
-    change nubmber of missing, whle fixing k, qi and size of dataset
+    change number of missing, while fixing k, qi and size of dataset
     """
     data_back = copy.deepcopy(data)
     length = len(data_back)
@@ -200,12 +200,12 @@ if __name__ == '__main__':
     except:
         pass
     k = 10
-    if DATA_SELECT == 'i':
-        RAW_DATA = read_informs()
-        ATT_TREES = read_informs_tree(1)
-    else:
+    if DATA_SELECT == 'a':
         RAW_DATA = read_adult()
         ATT_TREES = read_adult_tree()
+    else:
+        RAW_DATA = read_informs()
+        ATT_TREES = read_informs_tree(1)
     ALG = PAA
     ATT_TREES = ATT_TREES[-1]
     print '#' * 30
@@ -230,7 +230,7 @@ if __name__ == '__main__':
         get_result_one(ALG, ATT_TREES, RAW_DATA)
     else:
         print "Usage: python anonymizer [a | i] [k | qi | data | one]"
-        print "a: adult dataset, 'i': INFORMS ataset"
+        print "a: adult dataset, 'i': INFORMS dataset"
         print "K: varying k, qi: varying qi numbers, data: varying size of dataset, \
                 one: run only once"
     # anonymized dataset is stored in result

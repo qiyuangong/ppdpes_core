@@ -93,7 +93,7 @@ def read_tree_file(treename):
 
 def read_data(flag=0):
     """
-    read microda for *.txt and return read data
+    read microdata for *.txt and return read data
     """
     data = []
     userfile = open('data/demographics.csv', 'rU')
@@ -103,7 +103,7 @@ def read_data(flag=0):
     QI_num = len(QI_INDEX)
     for i in range(QI_num):
         numeric_dict.append(dict())
-    # We selet 3,4,5,6,13,15,15 att from demographics05, and 2 from condition05
+    # We select 3,4,5,6,13,15,15 att from demographics05, and 2 from condition05
     if __DEBUG:
         print "Reading Data..."
     for i, line in enumerate(userfile):
