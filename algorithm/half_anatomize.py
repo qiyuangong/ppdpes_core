@@ -38,7 +38,7 @@ class Group(object):
         return False
 
 
-def anatomizer(gdata, L):
+def anatomize(gdata, L):
     """
     L is the denote l in l-diversity
     gdata is a 2-dimensional list, i.e. [[],[]]

@@ -7,7 +7,7 @@
 # http://cn.linkedin.com/pub/qiyuan-gong/6b/831/407/
 
 from partition_for_transaction_index import partition, list_to_str
-from anatomizer import anatomizer
+from half_anatomize import anatomize
 import time, random
 import pdb
 
@@ -52,7 +52,7 @@ def mergeable(group1, group2, L):
 
 def APA(att_tree, data, K=10, L=5):
     """Using Partition to anonymize SA (transaction) partition, 
-    while applying Anatomizer to separate QID and SA
+    while applying Anatomize to separate QID and SA
     """
     # Initialization
     global gl_att_tree, gl_data
@@ -65,7 +65,7 @@ def APA(att_tree, data, K=10, L=5):
     print "size of dataset %d" % len(gl_data)
     # Begin Anatomy
     print "Begin Anatomy"
-    anatomy_index = anatomizer(gl_data, L)
+    anatomy_index = anatomize(gl_data, L)
     # Begin Partition
     trans = [t[-1] for t in gl_data]
     trans_set = partition(att_tree, trans, K)

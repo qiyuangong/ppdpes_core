@@ -1,5 +1,5 @@
 from partition_for_transaction_index import partition, list_to_str
-from anatomizer import anatomizer
+from half_anatomize import anatomize
 import time
 import pdb
 
@@ -54,7 +54,7 @@ def PAA(att_tree, data, K=10, L=5):
             gtemp.append(temp)
         grouped_data.append(gtemp)
     print "Begin Anatomy"
-    grouped_result = anatomizer(grouped_data, L)
+    grouped_result = anatomize(grouped_data, L)
     print("--- %s seconds ---" % (time.time() - start_time))
     # transform data format (QID1,.., QIDn, SA set, GroupID, 1/|group size|, SA_list (dict) :original SA (str) sets with prob)
     # 1/|group size|, original SA sets with prob (dict) will be used in evaluation
