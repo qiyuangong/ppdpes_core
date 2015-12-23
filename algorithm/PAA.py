@@ -1,4 +1,4 @@
-from partition_for_transaction import partition, list_to_str
+from partition_for_transaction_index import partition, list_to_str
 from anatomizer import anatomizer
 import time
 import pdb
@@ -12,20 +12,20 @@ gl_data = []
 def get_range(att_tree, tran):
     """compute probability for generlized set
     For example, age value 10 is generlized to 10-20.
-    So the probability is 1/10, which means that this 
-    range is 10 with probability 1/10. 
+    So the probability is 1/10, which means that this
+    range is 10 with probability 1/10.
     """
     # store the probability of each value
     prob = 1.0
     for t in tran:
-        if att_tree[t].support:
-            support = att_tree[t].support
+        if len(att_tree[t]):
+            support = len(att_tree[t])
             prob /= support
     return prob
 
 
 def PAA(att_tree, data, K=10, L=5):
-    """Using Partition to anonymize SA (transaction) partition, 
+    """Using Partition to anonymize SA (transaction) partition,
     while applying Anatomize to separate QID and SA
     """
     global gl_att_tree, gl_data
@@ -55,7 +55,7 @@ def PAA(att_tree, data, K=10, L=5):
         grouped_data.append(gtemp)
     print "Begin Anatomy"
     grouped_result = anatomizer(grouped_data, L)
-    print("--- %s seconds ---" % (time.time()-start_time))
+    print("--- %s seconds ---" % (time.time() - start_time))
     # transform data format (QID1,.., QIDn, SA set, GroupID, 1/|group size|, SA_list (dict) :original SA (str) sets with prob)
     # 1/|group size|, original SA sets with prob (dict) will be used in evaluation
     for index, group in enumerate(grouped_result):
@@ -75,14 +75,14 @@ def PAA(att_tree, data, K=10, L=5):
             for p in parent_list.keys():
                 if temp in tran_tree[p]:
                     try:
-                        SA_list[temp] += parent_list[p]/length 
+                        SA_list[temp] += parent_list[p] / length
                     except:
-                        SA_list[temp] = parent_list[p]/length
+                        SA_list[temp] = parent_list[p] / length
         # pdb.set_trace()
         for t in group:
             temp = t[:]
             temp.append(index)
-            temp.append(1.0/length)
+            temp.append(1.0 / length)
             temp.append(SA_list)
             result.append(temp)
     return result

@@ -10,6 +10,8 @@ from algorithm.mondrian import mondrian
 
 
 from algorithm.Separation_Gen import Separation_Gen
+from algorithm.PAA import PAA
+
 from algorithm.anatomizer import anatomizer
 from utils.read_adult_data import read_data as read_adult
 from utils.read_adult_data import read_tree as read_adult_tree
@@ -204,7 +206,8 @@ if __name__ == '__main__':
     else:
         RAW_DATA = read_adult()
         ATT_TREES = read_adult_tree()
-    ALG = Separation_Gen
+    ALG = PAA
+    ATT_TREES = ATT_TREES[-1]
     print '#' * 30
     if DATA_SELECT == 'a':
         print "Adult data"

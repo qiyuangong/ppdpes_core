@@ -6,7 +6,7 @@
 # http://github.com/qiyuangong
 # http://cn.linkedin.com/pub/qiyuan-gong/6b/831/407/
 
-from partition_for_transaction import partition, list_to_str
+from partition_for_transaction_index import partition, list_to_str
 from anatomizer import anatomizer
 import time, random
 import pdb
@@ -16,17 +16,18 @@ _DEBUG = True
 gl_att_tree = []
 gl_data = []
 
+
 def get_range(att_tree, tran):
     """compute probability for generlized set
     For example, age value 10 is generlized to 10-20.
-    So the probability is 1/10, which means that this 
-    range is 10 with probability 1/10. 
+    So the probability is 1/10, which means that this
+    range is 10 with probability 1/10.
     """
     # store the probability of each value
     prob = 1.0
     for t in tran:
-        if att_tree[t].support:
-            support = att_tree[t].support
+        if len(att_tree[t]):
+            support = len(att_tree[t])
             prob /= support
     return prob
 
