@@ -1,5 +1,4 @@
 import unittest
-import pdb
 from models.gentree import GenTree
 from algorithm.Separation_Gen import Separation_Gen
 

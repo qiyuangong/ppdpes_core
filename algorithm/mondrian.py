@@ -339,7 +339,6 @@ def mondrian(att_trees, data, k, QI_num=-1):
             r_ncp += get_normalized_width(partition, i)
         temp = partition.middle
         for i in range(len(partition)):
-            # TODO Fix 6,6 bug
             result.append(temp[:])
         r_ncp *= len(partition)
         ncp += r_ncp

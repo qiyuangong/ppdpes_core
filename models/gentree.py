@@ -23,6 +23,7 @@ class GenTree(object):
         self.parent = []
         self.child = []
         self.cover = {}
+        self.leaf = {}
         if value is not None:
             self.value = value
             self.cover[value] = self
@@ -35,6 +36,7 @@ class GenTree(object):
                 t.cover[self.value] = self
                 if isleaf:
                     t.leaf_num += 1
+                    t.leaf[self.value] = self
 
     def node(self, value):
         """Search tree with value, return GenTree node.
