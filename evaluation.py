@@ -27,7 +27,7 @@ DEFAULT_S = 5
 # requirement.
 FAST_BREAK = 100
 
-
+# TODO
 def init_cover_dict(att_trees):
     global COVER_DICT
     COVER_DICT = []
