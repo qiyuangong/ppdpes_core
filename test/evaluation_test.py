@@ -72,3 +72,6 @@ class test_Apriori_based_Anon(unittest.TestCase):
                   ['a2', ['A', 'b2']]]
         are = average_relative_error(att_trees, data, result, 1, 5)
         # self.assertEqual(are, 0.5)
+
+if __name__ == '__main__':
+    unittest.main()

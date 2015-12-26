@@ -29,7 +29,7 @@ gl_SA_index = -1
 __DEBUG = False
 
 
-def read_data(missing=True):
+def read_data(missing=False):
     """
     read microda for *.txt and return read data
     """
@@ -47,7 +47,7 @@ def read_data(missing=True):
         # only 30162 records will be kept
         if len(line) == 0:
             continue
-        if missing and '?' in line:
+        if missing is False and '?' in line:
             continue
         # remove double spaces
         line = line.replace(' ', '')
