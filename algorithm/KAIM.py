@@ -154,6 +154,22 @@ def find_best_cluster_kmember(record, clusters):
     return min_index
 
 
+def find_furthest_record(r_index, data):
+    """
+    :param r_index: index of the random record, or the last r
+    :param data: remain records in data
+    :return: the index of the furthest record from r_index
+    """
+    max_distance = 0
+    max_index = -1
+    for index in range(len(data)):
+        current_distance = entropy_distance(data[r_index], data[index])
+        if current_distance >= max_distance:
+            max_distance = current_distance
+            max_index = index
+    return max_index
+
+
 def clustering_kmember(data, k=25):
     """
     Group record according to NCP. K-member
@@ -162,18 +178,18 @@ def clustering_kmember(data, k=25):
     # randomly choose seed and find k-1 nearest records to form cluster with size k
     r_pos = random.randrange(len(data))
     while len(data) >= k:
-        r_pos = find_furthest_r(r_pos, data)
+        r_pos = find_furthest_record(r_pos, data)
         record = data.pop(r_pos)
         cluster = Cluster(record, record)
         while len(cluster) < k:
-            r_pos = find_best_record(cluster, data)
+            r_pos = find_best_cluster_kmember(cluster, data)
             record = data.pop(r_pos)
             cluster.add_record(record)
         clusters.append(cluster)
     # residual assignment
     while len(data) > 0:
         t = data.pop()
-        cluster_index = find_best_cluster_knn(t, clusters)
+        cluster_index = find_best_cluster_kmember(t, clusters)
         clusters[cluster_index].add_record(t)
     return clusters
 
@@ -200,23 +216,14 @@ def init(att_trees, data, QI_num=-1):
             QI_RANGE.append(len(ATT_TREES[i]['*']))
 
 
-def clustering_based_k_anon(att_trees, data, type_alg='knn', k=10, QI_num=-1):
+def KAIM(att_trees, data, type_alg='knn', k=10, QI_num=-1):
     """
     the main function of clustering based k-anon
     """
     init(att_trees, data, QI_num)
     result = []
     start_time = time.time()
-    if type_alg == 'knn':
-        print "Begin to KNN Cluster based on NCP"
-        clusters = clustering_knn(data, k)
-    elif type_alg == 'kmember':
-        print "Begin to K-Member Cluster based on NCP"
-        clusters = clustering_kmember(data, k)
-    else:
-        print "Please choose merge algorithm types"
-        print "knn | kmember"
-        return (0, (0, 0))
+    clustering_kmember(data, k)
     rtime = float(time.time() - start_time)
     ncp = 0.0
     for cluster in clusters:
