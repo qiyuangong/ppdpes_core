@@ -1,11 +1,9 @@
 """
-main module of KAIM
+main module for cluster_based_k_anon
 """
-
 #!/usr/bin/env python
 #coding=utf-8
 
-from models.cluster import Cluster
 from models.numrange import NumRange
 from models.gentree import GenTree
 from utils.utility import get_num_list_from_str, cmp_str
@@ -25,7 +23,49 @@ QI_RANGE = []
 IS_CAT = []
 
 
-def entropy_distance(source, target):
+class Cluster(object):
+
+    """Cluster is for cluster based k-anonymity
+    middle denote generlized value for one cluster
+    self.member: record list in cluster
+    self.middle: middle node in cluster
+    """
+
+    def __init__(self, member, middle):
+        self.iloss = 0.0
+        self.member = member
+        self.middle = middle[:]
+
+    def add_record(self, record):
+        """
+        add record to cluster
+        """
+        self.member.append(record)
+        self.middle = middle(self.middle, record)
+
+    def merge_group(self, group, middle):
+        """merge group into self_gourp and delete group elements.
+        update self.middle with middle
+        """
+        while group.member:
+            temp = group.member.pop()
+            self.member.append(temp)
+        self.middle = middle[:]
+
+    def merge_record(self, record, middle):
+        """merge record into hostgourp. update self.middle with middle
+        """
+        self.member.append(record)
+        self.middle = middle[:]
+
+    def __len__(self):
+        """
+        return number of records in cluster
+        """
+        return len(self.member)
+
+
+def r_distance(source, target):
     """
     Return distance between source (cluster or record)
     and target (cluster or record). The distance is based on
@@ -141,33 +181,50 @@ def middle_for_cluster(records):
 
 def find_best_cluster_kmember(record, clusters):
     """residual assignment. Find best cluster for record."""
-    min_distance = 1000000000000
+    min_diff = 1000000000000
     min_index = 0
     best_cluster = clusters[0]
     for i, t in enumerate(clusters):
-        distance = diff_distance(record, t)
-        if distance < min_distance:
-            min_distance = distance
+        IF_diff = diff_distance(record, t)
+        if IF_diff < min_diff:
+            min_distance = IF_diff
             min_index = i
             best_cluster = t
     # add record to best cluster
     return min_index
 
 
-def find_furthest_record(r_index, data):
+def find_furthest_record(record, data):
     """
-    :param r_index: index of the random record, or the last r
+    :param record: the latest record be added to cluster
     :param data: remain records in data
     :return: the index of the furthest record from r_index
     """
     max_distance = 0
     max_index = -1
     for index in range(len(data)):
-        current_distance = entropy_distance(data[r_index], data[index])
+        current_distance = r_distance(record, data[index])
         if current_distance >= max_distance:
             max_distance = current_distance
             max_index = index
     return max_index
+
+
+def find_best_record(cluster, data):
+    """
+    :param cluster: current
+    :param data: remain dataset
+    :return: index of record with min diff on information loss
+    """
+    # pdb.set_trace()
+    min_diff = 1000000000000
+    min_index = 0
+    for index, record in enumerate(data):
+        IF_diff = diff_distance(record, cluster)
+        if IF_diff < min_diff:
+            min_diff = IF_diff
+            min_index = index
+    return min_index
 
 
 def clustering_kmember(data, k=25):
@@ -177,15 +234,17 @@ def clustering_kmember(data, k=25):
     clusters = []
     # randomly choose seed and find k-1 nearest records to form cluster with size k
     r_pos = random.randrange(len(data))
+    record = data[r_pos]
     while len(data) >= k:
-        r_pos = find_furthest_record(r_pos, data)
+        r_pos = find_furthest_record(record, data)
         record = data.pop(r_pos)
-        cluster = Cluster(record, record)
+        cluster = Cluster([record], record)
         while len(cluster) < k:
-            r_pos = find_best_cluster_kmember(cluster, data)
+            r_pos = find_best_record(cluster, data)
             record = data.pop(r_pos)
             cluster.add_record(record)
         clusters.append(cluster)
+        # pdb.set_trace()
     # residual assignment
     while len(data) > 0:
         t = data.pop()
@@ -216,14 +275,14 @@ def init(att_trees, data, QI_num=-1):
             QI_RANGE.append(len(ATT_TREES[i]['*']))
 
 
-def KAIM(att_trees, data, type_alg='knn', k=10, QI_num=-1):
+def clustering_based_k_anon(att_trees, data, k=10, QI_num=-1):
     """
     the main function of clustering based k-anon
     """
     init(att_trees, data, QI_num)
     result = []
     start_time = time.time()
-    clustering_kmember(data, k)
+    clusters = clustering_kmember(data, k)
     rtime = float(time.time() - start_time)
     ncp = 0.0
     for cluster in clusters:
