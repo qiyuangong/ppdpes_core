@@ -12,21 +12,25 @@ from algorithm.mondrian import mondrian
 from algorithm.Separation_Gen import Separation_Gen
 from algorithm.PAA import PAA
 
-from algorithm.anatomizer import anatomizer
+from algorithm.anatomize import anatomize
 from utils.read_adult_data import read_data as read_adult
 from utils.read_adult_data import read_tree as read_adult_tree
 from utils.read_informs_data import read_data as read_informs
 from utils.read_informs_data import read_tree as read_informs_tree
+from utils.read_musk_data import read_data as read_musk
+from utils.read_musk_data import read_tree as read_musk_tree
 import sys, copy, random
 
+__DEBUG = True
 DATA_SELECT = 'i'
 DEFAULT_K = 10
 # sys.setrecursionlimit(50000)
 
 
 def get_result_one(alg, att_trees, data, k=DEFAULT_K):
-    "run anonymization algorithm for one time, with k=10"
+    "run semi_partition for one time, with k=10"
     print "K=%d" % k
+    print "Mondrian"
     data_back = copy.deepcopy(data)
     _, eval_result = alg(att_trees, data, k)
     print "NCP %0.2f" % eval_result[0] + "%"
@@ -35,29 +39,31 @@ def get_result_one(alg, att_trees, data, k=DEFAULT_K):
 
 def get_result_k(alg, att_trees, data):
     """
-    change k, while fixing QD and size of dataset
+    change k, whle fixing QD and size of dataset
     """
     data_back = copy.deepcopy(data)
     all_ncp = []
     all_rtime = []
     # for k in range(5, 105, 5):
     for k in [2, 5, 10, 25, 50, 100]:
-        print '#' * 30
-        print "K=%d" % k
         _, eval_result = alg(att_trees, data, k)
         data = copy.deepcopy(data_back)
-        print "NCP %0.2f" % eval_result[0] + "%"
         all_ncp.append(round(eval_result[0], 2))
-        print "Running time %0.2f" % eval_result[1] + "seconds"
         all_rtime.append(round(eval_result[1], 2))
+        if __DEBUG:
+            print '#' * 30
+            print "K=%d" % k
+            print "NCP %0.2f" % eval_result[0] + "%"
+            print "Running time %0.2f" % eval_result[1] + "seconds"
     print "All NCP", all_ncp
     print "All Running time", all_rtime
+    print '#' * 30
 
 
 def get_result_dataset(alg, att_trees, data, k=DEFAULT_K, n=10):
     """
     fix k and QI, while changing size of dataset
-    n is the proportion number.
+    n is the proportion nubmber.
     """
     data_back = copy.deepcopy(data)
     length = len(data_back)
@@ -73,25 +79,27 @@ def get_result_dataset(alg, att_trees, data, k=DEFAULT_K, n=10):
     all_ncp = []
     all_rtime = []
     for pos in datasets:
-        ncp = rtime = 0
-        print '#' * 30
-        print "size of dataset %d" % pos
+        ncp = rtime = pollution = 0.0
         for j in range(n):
             temp = random.sample(data, pos)
-            result, eval_result = alg(att_trees, temp, k)
+            __, eval_result = alg(att_trees, temp, k)
             ncp += eval_result[0]
             rtime += eval_result[1]
+            pollution += eval_result[2]
             data = copy.deepcopy(data_back)
-            # save_to_file((att_trees, temp, result, k, L))
         ncp /= n
         rtime /= n
-        print "Average NCP %0.2f" % ncp + "%"
+        pollution /= n
+        if __DEBUG:
+            print '#' * 30
+            print "size of dataset %d" % pos
+            print "Average NCP %0.2f" % ncp + "%"
+            print "Running time %0.2f" % rtime + "seconds"
         all_ncp.append(round(ncp, 2))
-        print "Running time %0.2f" % rtime + "seconds"
         all_rtime.append(round(rtime, 2))
-    print '#' * 30
     print "All NCP", all_ncp
     print "All Running time", all_rtime
+    print '#' * 30
 
 
 def get_result_qi(alg, att_trees, data, k=DEFAULT_K):
@@ -102,22 +110,24 @@ def get_result_qi(alg, att_trees, data, k=DEFAULT_K):
     ls = len(data[0])
     all_ncp = []
     all_rtime = []
-    for i in reversed(range(1, ls)):
-        print '#' * 30
-        print "Number of QI=%d" % i
+    for i in range(1, ls):
         _, eval_result = alg(att_trees, data, k, i)
         data = copy.deepcopy(data_back)
-        print "NCP %0.2f" % eval_result[0] + "%"
         all_ncp.append(round(eval_result[0], 2))
-        print "Running time %0.2f" % eval_result[1] + "seconds"
         all_rtime.append(round(eval_result[1], 2))
+        if __DEBUG:
+            print '#' * 30
+            print "Number of QI=%d" % i
+            print "NCP %0.2f" % eval_result[0] + "%"
+            print "Running time %0.2f" % eval_result[1] + "seconds"
     print "All NCP", all_ncp
     print "All Running time", all_rtime
+    print '#' * 30
 
 
 def get_result_missing(alg, att_trees, data, k=DEFAULT_K, n=10):
     """
-    change number of missing, while fixing k, qi and size of dataset
+    change nubmber of missing, whle fixing k, qi and size of dataset
     """
     data_back = copy.deepcopy(data)
     length = len(data_back)
@@ -147,7 +157,7 @@ def get_result_missing(alg, att_trees, data, k=DEFAULT_K, n=10):
         for j in range(n):
             gen_missing_dataset(data, joint)
             missing_rate(data)
-            _, eval_result = semi_partition(att_trees, data, k)
+            _, eval_result = alg(att_trees, data, k)
             data = copy.deepcopy(data_back)
             ncp += eval_result[0]
             rtime += eval_result[1]
@@ -203,16 +213,24 @@ if __name__ == '__main__':
     if DATA_SELECT == 'a':
         RAW_DATA = read_adult()
         ATT_TREES = read_adult_tree()
-    else:
+    elif DATA_SELECT == 'i':
         RAW_DATA = read_informs()
         ATT_TREES = read_informs_tree(1)
-    ALG = PAA
-    ATT_TREES = ATT_TREES[-1]
+    elif DATA_SELECT == 'm':
+        RAW_DATA = read_musk()
+        ATT_TREES = read_musk_tree()
+    else:
+        RAW_DATA = read_adult()
+        ATT_TREES = read_adult_tree()
+    ALG = semi_partition
+    # ATT_TREES = ATT_TREES[-1]
     print '#' * 30
     if DATA_SELECT == 'a':
         print "Adult data"
-    else:
+    elif DATA_SELECT == 'i':
         print "INFORMS data"
+    else:
+        print "Musk data"
     print '#' * 30
     if FLAG == 'k':
         get_result_k(ALG, ATT_TREES, RAW_DATA)
