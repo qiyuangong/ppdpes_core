@@ -7,8 +7,7 @@ run semi_partition with given parameters
 from algorithm.semi_partition import semi_partition
 from algorithm.semi_partition_missing import semi_partition_missing
 from algorithm.mondrian import mondrian
-
-
+from algorithm.clustering_based_k_anon import anon_k_member, anon_k_nn
 from algorithm.Separation_Gen import Separation_Gen
 from algorithm.PAA import PAA
 
@@ -21,7 +20,7 @@ from utils.read_musk_data import read_data as read_musk
 from utils.read_musk_data import read_tree as read_musk_tree
 import sys, copy, random
 
-__DEBUG = True
+__DEBUG = False
 DATA_SELECT = 'i'
 DEFAULT_K = 10
 # sys.setrecursionlimit(50000)
@@ -85,11 +84,9 @@ def get_result_dataset(alg, att_trees, data, k=DEFAULT_K, n=10):
             __, eval_result = alg(att_trees, temp, k)
             ncp += eval_result[0]
             rtime += eval_result[1]
-            pollution += eval_result[2]
             data = copy.deepcopy(data_back)
         ncp /= n
         rtime /= n
-        pollution /= n
         if __DEBUG:
             print '#' * 30
             print "size of dataset %d" % pos
@@ -204,33 +201,55 @@ def gen_missing_dataset(data, joint):
 if __name__ == '__main__':
     FLAG = ''
     LEN_ARGV = len(sys.argv)
+    # Default value
+    ALG = mondrian
+    k = 10
+    FLAG = ''
+    # get value from argv
     try:
         DATA_SELECT = sys.argv[1]
-        FLAG = sys.argv[2]
+        ALG_SELECT = sys.argv[2]
+        FLAG = sys.argv[3]
     except:
         pass
-    k = 10
+    # read dataset
     if DATA_SELECT == 'a':
+        print "Adult data"
         RAW_DATA = read_adult()
         ATT_TREES = read_adult_tree()
     elif DATA_SELECT == 'i':
+        print "INFORMS data"
         RAW_DATA = read_informs()
         ATT_TREES = read_informs_tree(1)
     elif DATA_SELECT == 'm':
+        print "Musk data"
         RAW_DATA = read_musk()
         ATT_TREES = read_musk_tree()
     else:
+        print "Adult data"
         RAW_DATA = read_adult()
         ATT_TREES = read_adult_tree()
-    ALG = semi_partition
-    # ATT_TREES = ATT_TREES[-1]
+    if __DEBUG:
+        # ATT_TREES = ATT_TREES[-1]
+        RAW_DATA = RAW_DATA[:2000]
+        print "Test with 2000 records"
     print '#' * 30
-    if DATA_SELECT == 'a':
-        print "Adult data"
-    elif DATA_SELECT == 'i':
-        print "INFORMS data"
+    # choose algorithm
+    if ALG_SELECT == 'm':
+        print "Mondrian"
+        ALG = mondrian
+    elif ALG_SELECT == 's':
+        print "Semi-Partition"
+        ALG = semi_partition
+    elif ALG_SELECT == 'knn':
+        print "k-nn"
+        ALG = anon_k_nn
+    elif ALG_SELECT == 'kmember':
+        print "k-member"
+        ALG = anon_k_member
     else:
-        print "Musk data"
+        print "Mondrian"
+        ALG = mondrian
     print '#' * 30
     if FLAG == 'k':
         get_result_k(ALG, ATT_TREES, RAW_DATA)
@@ -247,8 +266,9 @@ if __name__ == '__main__':
     elif FLAG == '':
         get_result_one(ALG, ATT_TREES, RAW_DATA)
     else:
-        print "Usage: python anonymizer [a | i] [k | qi | data | one]"
-        print "a: adult dataset, 'i': INFORMS dataset"
+        print "Usage: python anonymizer [a | i | m] [s | m | knn | kmember] [k | qi | data | one]"
+        print "a: adult dataset, i: INFORMS dataset, m: musk dataset"
+        print "[s: semi_partition, m: mondrian, knn: k-nnn, kmember: k-member]"
         print "K: varying k, qi: varying qi numbers, data: varying size of dataset, \
                 one: run only once"
     # anonymized dataset is stored in result

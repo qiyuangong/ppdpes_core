@@ -8,8 +8,11 @@ from utils.utility import cmp_str
 import pickle
 
 import pdb
-
-QI_INDEX = range(2,169)
+# Musk: [other(0, 1), f1-f166, class]
+# f1-f166 as QID
+# class as SA
+QI_INDEX = range(2,168)
+SA_INDEX = -1
 __DEBUG = False
 
 
@@ -39,6 +42,7 @@ def read_data():
         line = line.replace(' ', '')
         temp = line.split(',')
         ltemp = []
+        # pdb.set_trace()
         for i in range(QI_num):
             index = QI_INDEX[i]
             try:
@@ -46,6 +50,7 @@ def read_data():
             except KeyError:
                 numeric_dict[i][temp[index]] = 1
             ltemp.append(temp[index])
+        ltemp.append(temp[-1])
         data.append(ltemp)
     # pickle numeric attributes and get NumRange
     for i in range(QI_num):

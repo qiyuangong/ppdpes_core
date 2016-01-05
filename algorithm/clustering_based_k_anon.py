@@ -42,6 +42,7 @@ class Cluster(object):
         """
         self.member.append(record)
         self.middle = middle(self.middle, record)
+        self.iloss = len(self.member) * NCP(self.middle)
 
     def merge_group(self, group, middle):
         """merge group into self_gourp and delete group elements.
@@ -96,13 +97,13 @@ def r_distance(source, target):
 def diff_distance(record, cluster):
     """
     Return distance between record
-    and cluster. The distance is based on increasement of
+    and cluster. IL(cluster and record) - IL(cluster)
+    The distance is based on increasement of
     NCP (Normalized Certainty Penalty) on relational part.
     """
-    mid = cluster.middle
-    len_cluster = len(cluster)
+    iloss_before = cluster.iloss
     mid_after = middle(record, mid)
-    return NCP(mid_after) * (len_cluster + 1) - NCP(mid) * len_cluster
+    return NCP(mid_after) * (len_cluster + 1) - iloss_before
 
 
 def NCP(mid):
@@ -274,8 +275,12 @@ def find_best_record(cluster, data):
     # pdb.set_trace()
     min_diff = 1000000000000
     min_index = 0
+    mid = cluster.middle
     for index, record in enumerate(data):
-        IF_diff = diff_distance(record, cluster)
+        # IF_diff = diff_distance(record, cluster)
+        # actually IL(cluster) and the number of |cluster|+1 is constant
+        # so compare IL(cluster and record) is enough
+        IF_diff = NCP(middle(record, mid))
         if IF_diff < min_diff:
             min_diff = IF_diff
             min_index = index
@@ -347,6 +352,56 @@ def clustering_based_k_anon(att_trees, data, type_alg='knn', k=10, QI_num=-1):
         print "Please choose merge algorithm types"
         print "knn | kmember"
         return (0, (0, 0))
+    rtime = float(time.time() - start_time)
+    ncp = 0.0
+    for cluster in clusters:
+        gen_result = []
+        mid = cluster.middle
+        for i in range(len(cluster)):
+            gen_result.append(mid)
+        result.extend(gen_result)
+        rncp = NCP(mid)
+        ncp += 1.0 * rncp * len(cluster)
+    ncp /= LEN_DATA
+    ncp /= QI_LEN
+    ncp *= 100
+    if __DEBUG:
+        print "NCP=", ncp
+    return (result, (ncp, rtime))
+
+def anon_k_nn(att_trees, data, k=10, QI_num=-1):
+    """
+    the main function of clustering based k-anon
+    """
+    init(att_trees, data, QI_num)
+    result = []
+    start_time = time.time()
+    clusters = clustering_knn(data, k)
+    rtime = float(time.time() - start_time)
+    ncp = 0.0
+    for cluster in clusters:
+        gen_result = []
+        mid = cluster.middle
+        for i in range(len(cluster)):
+            gen_result.append(mid)
+        result.extend(gen_result)
+        rncp = NCP(mid)
+        ncp += 1.0 * rncp * len(cluster)
+    ncp /= LEN_DATA
+    ncp /= QI_LEN
+    ncp *= 100
+    if __DEBUG:
+        print "NCP=", ncp
+    return (result, (ncp, rtime))
+
+def anon_k_member(att_trees, data, k=10, QI_num=-1):
+    """
+    the main function of clustering based k-anon
+    """
+    init(att_trees, data, QI_num)
+    result = []
+    start_time = time.time()
+    clusters = clustering_kmember(data, k)
     rtime = float(time.time() - start_time)
     ncp = 0.0
     for cluster in clusters:
