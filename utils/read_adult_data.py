@@ -66,7 +66,7 @@ def read_data(missing=False):
     # pickle numeric attributes and get NumRange
     for i in range(QI_num):
         if IS_CAT[i] is False:
-            static_file = open('gh/adult_' + ATT_NAMES[QI_INDEX[i]] + '_static.pickle', 'wb')
+            static_file = open('tmp/adult_' + ATT_NAMES[QI_INDEX[i]] + '_static.pickle', 'wb')
             sort_value = list(numeric_dict[i].keys())
             sort_value.sort(cmp=cmp_str)
             pickle.dump((numeric_dict[i], sort_value), static_file)
@@ -95,7 +95,7 @@ def read_pickle_file(att_name):
     return numrange object
     """
     try:
-        static_file = open('gh/adult_' + att_name + '_static.pickle', 'rb')
+        static_file = open('tmp/adult_' + att_name + '_static.pickle', 'rb')
         (numeric_dict, sort_value) = pickle.load(static_file)
     except:
         print "Pickle file not exists!!"

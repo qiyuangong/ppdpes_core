@@ -42,7 +42,6 @@ def read_data():
         line = line.replace(' ', '')
         temp = line.split(',')
         ltemp = []
-        # pdb.set_trace()
         for i in range(QI_num):
             index = QI_INDEX[i]
             try:
@@ -54,7 +53,7 @@ def read_data():
         data.append(ltemp)
     # pickle numeric attributes and get NumRange
     for i in range(QI_num):
-        static_file = open('gh/musk_' + str(QI_INDEX[i]) + '_static.pickle', 'wb')
+        static_file = open('tmp/musk_' + str(QI_INDEX[i]) + '_static.pickle', 'wb')
         sort_value = list(numeric_dict[i].keys())
         sort_value.sort(cmp=cmp_str)
         pickle.dump((numeric_dict[i], sort_value), static_file)
@@ -68,7 +67,7 @@ def read_pickle_file(att_name):
     return numrange object
     """
     try:
-        static_file = open('gh/musk_' + att_name + '_static.pickle', 'rb')
+        static_file = open('tmp/musk_' + att_name + '_static.pickle', 'rb')
         (numeric_dict, sort_value) = pickle.load(static_file)
     except:
         print "Pickle file not exists!!"
