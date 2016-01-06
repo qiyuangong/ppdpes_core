@@ -18,7 +18,7 @@ from utils.read_informs_data import read_data as read_informs
 from utils.read_informs_data import read_tree as read_informs_tree
 from utils.read_musk_data import read_data as read_musk
 from utils.read_musk_data import read_tree as read_musk_tree
-import sys, copy, random
+import sys, copy, random, cProfile
 
 __DEBUG = False
 DATA_SELECT = 'i'
@@ -29,7 +29,6 @@ DEFAULT_K = 10
 def get_result_one(alg, att_trees, data, k=DEFAULT_K):
     "run semi_partition for one time, with k=10"
     print "K=%d" % k
-    print "Mondrian"
     data_back = copy.deepcopy(data)
     _, eval_result = alg(att_trees, data, k)
     print "NCP %0.2f" % eval_result[0] + "%"
@@ -199,19 +198,16 @@ def gen_missing_dataset(data, joint):
 
 
 if __name__ == '__main__':
-    FLAG = ''
     LEN_ARGV = len(sys.argv)
     # Default value
-    ALG = mondrian
     k = 10
-    FLAG = ''
     # get value from argv
     try:
         DATA_SELECT = sys.argv[1]
         ALG_SELECT = sys.argv[2]
-        FLAG = sys.argv[3]
     except:
-        pass
+        DATA_SELECT = 'a'
+        ALG_SELECT = 'm'
     # read dataset
     if DATA_SELECT == 'a':
         print "Adult data"
@@ -230,6 +226,7 @@ if __name__ == '__main__':
         RAW_DATA = read_adult()
         ATT_TREES = read_adult_tree()
     if __DEBUG:
+        print sys.argv
         # ATT_TREES = ATT_TREES[-1]
         RAW_DATA = RAW_DATA[:2000]
         print "Test with 2000 records"
@@ -251,6 +248,10 @@ if __name__ == '__main__':
         print "Mondrian"
         ALG = mondrian
     print '#' * 30
+    try:
+        FLAG = sys.argv[3]
+    except:
+        FLAG = ''
     if FLAG == 'k':
         get_result_k(ALG, ATT_TREES, RAW_DATA)
     elif FLAG == 'qi':
@@ -258,13 +259,19 @@ if __name__ == '__main__':
     elif FLAG == 'data':
         get_result_dataset(ALG, ATT_TREES, RAW_DATA)
     elif FLAG == 'one':
-        if LEN_ARGV > 3:
-            k = int(sys.argv[3])
+        if LEN_ARGV > 4:
+            k = int(sys.argv[4])
             get_result_one(ALG, ATT_TREES, RAW_DATA, k)
         else:
-            get_result_one(ALG, ATT_TREES, RAW_DATA)
+            if __DEBUG:
+                cProfile.run('get_result_one(ALG, ATT_TREES, RAW_DATA)')
+            else:
+                get_result_one(ALG, ATT_TREES, RAW_DATA)
     elif FLAG == '':
-        get_result_one(ALG, ATT_TREES, RAW_DATA)
+        if __DEBUG:
+            cProfile.run('get_result_one(ALG, ATT_TREES, RAW_DATA)')
+        else:
+            get_result_one(ALG, ATT_TREES, RAW_DATA)
     else:
         print "Usage: python anonymizer [a | i | m] [s | m | knn | kmember] [k | qi | data | one]"
         print "a: adult dataset, i: INFORMS dataset, m: musk dataset"
