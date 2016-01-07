@@ -58,7 +58,7 @@ def get_result_k(alg, att_trees, data):
     print '#' * 30
 
 
-def get_result_dataset(alg, att_trees, data, k=DEFAULT_K, n=10):
+def get_result_dataset(alg, att_trees, data, k=DEFAULT_K, n=10, joint=5000):
     """
     fix k and QI, while changing size of dataset
     n is the proportion nubmber.
@@ -66,7 +66,6 @@ def get_result_dataset(alg, att_trees, data, k=DEFAULT_K, n=10):
     data_back = copy.deepcopy(data)
     length = len(data_back)
     print "K=%d" % k
-    joint = 5000
     datasets = []
     check_time = length / joint
     if length % joint == 0:

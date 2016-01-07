@@ -3,7 +3,6 @@
 output/*
 *.pickle
 .idea
-tmp/*
 
 # C extensions
 *.so

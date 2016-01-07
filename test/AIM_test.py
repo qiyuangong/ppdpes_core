@@ -15,8 +15,11 @@ class functionTest(unittest.TestCase):
                 ['4', '3', 'c'],
                 ['4', '4', 'd']]
         result = AIM(data, 2)
-        # print result
-        self.assertEqual(len(result), 4)
+        try:
+            self.assertEqual(len(result), 4)
+        except AssertionError:
+            print result
+            self.assertEqual(0, 1)
 
 if __name__ == '__main__':
     unittest.main()

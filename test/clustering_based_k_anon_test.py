@@ -43,9 +43,12 @@ class functionTest(unittest.TestCase):
                 ['4', '3', 'hha'],
                 ['4', '3', 'hha']]
         result, eval_r = clustering_based_k_anon(ATT_TREE, data, 'kmember', 2)
-        # print result
-        # print eval_r
-        self.assertTrue(abs(eval_r[0] - 0) < 0.05)
+        try:
+            self.assertTrue(abs(eval_r[0] - 0) < 0.05)
+        except AssertionError:
+            print result
+            print eval_r
+            self.assertEqual(0, 1)
 
     def test2_k_member(self):
         init()
@@ -58,9 +61,12 @@ class functionTest(unittest.TestCase):
                 ['4', '3', 'hha'],
                 ['4', '4', 'hha']]
         result, eval_r = clustering_based_k_anon(ATT_TREE, data, 'kmember', 2)
-        # print result
-        # print eval_r
-        self.assertTrue(abs(eval_r[0] - 2.77) < 0.05)
+        try:
+            self.assertTrue(abs(eval_r[0] - 2.77) < 0.05)
+        except AssertionError:
+            print result
+            print eval_r
+            self.assertEqual(0, 1)
 
     def test1_k_nn(self):
         init()
@@ -73,9 +79,12 @@ class functionTest(unittest.TestCase):
                 ['4', '3', 'hha'],
                 ['4', '3', 'hha']]
         result, eval_r = clustering_based_k_anon(ATT_TREE, data, 'knn', 2)
-        # print result
-        # print eval_r
-        self.assertTrue(abs(eval_r[0] -0) < 0.05)
+        try:
+            self.assertTrue(abs(eval_r[0] -0) < 0.05)
+        except AssertionError:
+            print result
+            print eval_r
+            self.assertEqual(0, 1)
 
     def test2_k_nn(self):
         init()
@@ -88,9 +97,12 @@ class functionTest(unittest.TestCase):
                 ['4', '3', 'hha'],
                 ['4', '4', 'hha']]
         result, eval_r = clustering_based_k_anon(ATT_TREE, data, 'knn', 2)
-        # print result
-        # print eval_r
-        self.assertTrue(abs(eval_r[0] - 2.77) < 0.05)
+        try:
+            self.assertTrue(abs(eval_r[0] - 2.77) < 0.05)
+        except AssertionError:
+            print result
+            print eval_r
+            self.assertEqual(0, 1)
 
 if __name__ == '__main__':
     unittest.main()

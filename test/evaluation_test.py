@@ -57,7 +57,11 @@ class test_Apriori_based_Anon(unittest.TestCase):
                   ['a2', ['A', 'b2']]]
         gen_data = get_result_cover(att_trees, result)
         est = est_query(gen_data, [0, 1], [['a1', 'a2'], [['a2', 'b1'], ['a1', 'b1', 'b2']]])
-        self.assertEqual(est, 2.5)
+        try:
+            self.assertEqual(est, 2.5)
+        except AssertionError:
+            print gen_data
+            self.assertEqual(0, 1)
 
     def test_are(self):
         init_tree()
