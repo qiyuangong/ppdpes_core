@@ -358,7 +358,7 @@ def clustering_based_k_anon(att_trees, data, type_alg='knn', k=10, QI_num=-1):
         gen_result = []
         mid = cluster.middle
         for i in range(len(cluster)):
-            gen_result.append(mid)
+            gen_result.append(mid + [cluster.member[i][-1]])
         result.extend(gen_result)
         rncp = NCP(mid)
         ncp += 1.0 * rncp * len(cluster)
@@ -383,7 +383,7 @@ def anon_k_nn(att_trees, data, k=10, QI_num=-1):
         gen_result = []
         mid = cluster.middle
         for i in range(len(cluster)):
-            gen_result.append(mid)
+            gen_result.append(mid + [cluster.member[i][-1]])
         result.extend(gen_result)
         rncp = NCP(mid)
         ncp += 1.0 * rncp * len(cluster)
@@ -408,7 +408,7 @@ def anon_k_member(att_trees, data, k=10, QI_num=-1):
         gen_result = []
         mid = cluster.middle
         for i in range(len(cluster)):
-            gen_result.append(mid)
+            gen_result.append(mid + [cluster.member[i][-1]])
         result.extend(gen_result)
         rncp = NCP(mid)
         ncp += 1.0 * rncp * len(cluster)
