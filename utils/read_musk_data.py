@@ -3,8 +3,12 @@
 
 # Read data and read tree fuctions for musk data
 
-from models.numrange import NumRange
-from utils.utility import cmp_str
+try:
+    from models.numrange import NumRange
+    from utils.utility import cmp_str
+except ImportError:
+    from ..models.numrange import NumRange
+    from ..utils.utility import cmp_str
 import pickle
 
 import pdb

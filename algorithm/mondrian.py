@@ -8,9 +8,14 @@ main module of basic Mondrian
 
 import pdb
 import random
-from models.numrange import NumRange
-from models.gentree import GenTree
-from utils.utility import cmp_str
+try:
+    from models.numrange import NumRange
+    from models.gentree import GenTree
+    from utils.utility import cmp_str
+except ImportError:
+    from ..models.numrange import NumRange
+    from ..models.gentree import GenTree
+    from ..utils.utility import cmp_str
 import time
 
 

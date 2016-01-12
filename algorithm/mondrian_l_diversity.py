@@ -25,9 +25,14 @@ main module of mondrian_l_diversity
 # 2014-10-12
 
 import pdb
-from models.numrange import NumRange
-from models.gentree import GenTree
-from utils.utility import list_to_str, cmp_str
+try:
+    from models.numrange import NumRange
+    from models.gentree import GenTree
+    from utils.utility import list_to_str, cmp_str
+except ImportError:
+    from ..models.numrange import NumRange
+    from ..models.gentree import GenTree
+    from ..utils.utility import list_to_str, cmp_str
 
 
 __DEBUG = False

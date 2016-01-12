@@ -5,9 +5,13 @@ main module of partition
 # coding=utf-8
 
 import pdb
-from models.gentree import GenTree
+try:
+    from models.gentree import GenTree
+    from utils.utility import list_to_str
+except ImportError:
+    from ..models.gentree import GenTree
+    from ..utils.utility import list_to_str
 from itertools import combinations
-from utils.utility import list_to_str
 
 
 _DEBUG = False

@@ -7,8 +7,10 @@ main module of Apriori based Anon
 
 import pdb
 import time
-from models.gentree import GenTree
-from random import randrange
+try:
+    from models.gentree import GenTree
+except ImportError:
+    from ..models.gentree import GenTree
 from itertools import combinations
 
 

@@ -2,7 +2,10 @@
 #coding=utf-8
 
 import pdb
-from models.gentree import GenTree
+try:
+    from models.gentree import GenTree
+except ImportError:
+    from ..models.gentree import GenTree
 from itertools import combinations
 
 

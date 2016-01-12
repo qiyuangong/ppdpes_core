@@ -7,9 +7,14 @@
 # 'capital_loss', 'hours_per_week', 'native_country', 'class']
 # QID ['age', 'workcalss', 'education', 'matrital_status', 'race', 'sex', 'native_country']
 # SA ['occopation']
-from models.gentree import GenTree
-from models.numrange import NumRange
-from utils.utility import cmp_str
+try:
+    from models.gentree import GenTree
+    from models.numrange import NumRange
+    from utils.utility import cmp_str
+except ImportError:
+    from ..models.gentree import GenTree
+    from ..models.numrange import NumRange
+    from ..utils.utility import cmp_str
 import pickle
 
 import pdb

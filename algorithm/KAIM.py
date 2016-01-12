@@ -4,9 +4,14 @@ main module for cluster_based_k_anon
 #!/usr/bin/env python
 #coding=utf-8
 
-from models.numrange import NumRange
-from models.gentree import GenTree
-from utils.utility import get_num_list_from_str, cmp_str
+try:
+    from models.numrange import NumRange
+    from models.gentree import GenTree
+    from utils.utility import get_num_list_from_str, cmp_str
+except ImportError:
+    from ..models.numrange import NumRange
+    from ..models.gentree import GenTree
+    from ..utils.utility import get_num_list_from_str, cmp_str
 import random
 import time
 import operator
