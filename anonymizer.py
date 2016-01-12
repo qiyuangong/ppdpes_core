@@ -196,14 +196,13 @@ def gen_missing_dataset(data, joint):
         joint -= 1
 
 
-if __name__ == '__main__':
-    LEN_ARGV = len(sys.argv)
-    # Default value
+def universe_anonymizer(argv):
+    LEN_ARGV = len(argv)
     k = 10
     # get value from argv
     try:
-        DATA_SELECT = sys.argv[1]
-        ALG_SELECT = sys.argv[2]
+        DATA_SELECT = argv[0]
+        ALG_SELECT = argv[1]
     except:
         DATA_SELECT = 'a'
         ALG_SELECT = 'm'
@@ -225,10 +224,9 @@ if __name__ == '__main__':
         RAW_DATA = read_adult()
         ATT_TREES = read_adult_tree()
     if __DEBUG:
-        print sys.argv
-        # ATT_TREES = ATT_TREES[-1]
         RAW_DATA = RAW_DATA[:2000]
-        print "Test with 2000 records"
+        print "Test anonymization with %d records" % len(RAW_DATA)
+        print sys.argv
     print '#' * 30
     # choose algorithm
     if ALG_SELECT == 'm':
@@ -248,7 +246,7 @@ if __name__ == '__main__':
         ALG = mondrian
     print '#' * 30
     try:
-        FLAG = sys.argv[3]
+        FLAG = argv[2]
     except:
         FLAG = ''
     if FLAG == 'k':
@@ -258,7 +256,7 @@ if __name__ == '__main__':
     elif FLAG == 'data':
         get_result_dataset(ALG, ATT_TREES, RAW_DATA)
     elif FLAG == 'one':
-        if LEN_ARGV > 4:
+        if LEN_ARGV > 3:
             k = int(sys.argv[4])
             get_result_one(ALG, ATT_TREES, RAW_DATA, k)
         else:
@@ -279,3 +277,7 @@ if __name__ == '__main__':
                 one: run only once"
     # anonymized dataset is stored in result
     print "Finish Anonymization!!"
+
+
+if __name__ == '__main__':
+   universe_anonymizer(sys.argv[1:])

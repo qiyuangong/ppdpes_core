@@ -102,7 +102,7 @@ def diff_distance(record, cluster):
     NCP (Normalized Certainty Penalty) on relational part.
     """
     iloss_before = cluster.iloss
-    mid_after = middle(record, mid)
+    mid_after = middle(record, cluster.middle)
     return NCP(mid_after) * (len_cluster + 1) - iloss_before
 
 
@@ -369,6 +369,7 @@ def clustering_based_k_anon(att_trees, data, type_alg='knn', k=10, QI_num=-1):
         print "NCP=", ncp
     return (result, (ncp, rtime))
 
+
 def anon_k_nn(att_trees, data, k=10, QI_num=-1):
     """
     the main function of clustering based k-anon
@@ -393,6 +394,7 @@ def anon_k_nn(att_trees, data, k=10, QI_num=-1):
     if __DEBUG:
         print "NCP=", ncp
     return (result, (ncp, rtime))
+
 
 def anon_k_member(att_trees, data, k=10, QI_num=-1):
     """
