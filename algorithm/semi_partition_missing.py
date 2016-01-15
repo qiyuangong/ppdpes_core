@@ -523,7 +523,7 @@ def semi_partition_missing(att_trees, data, k, QI_num=-1):
             p_ncp.append(get_normalized_width(partition, i))
         temp = partition.middle
         for record in partition.member:
-            result.append(temp[:] + [record[-1]])
+            result.append(temp + [record[-1]])
             for i in range(QI_LEN):
                 if record[i] == '?' or record[i] == '*':
                     raw_missing += 1
