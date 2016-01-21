@@ -18,7 +18,7 @@ import operator
 import pdb
 
 
-__DEBUG = False
+__DEBUG = True
 # att_tree store root node for each att
 ATT_TREES = []
 # databack store all reacord for dataset

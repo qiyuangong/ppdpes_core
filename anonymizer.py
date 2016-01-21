@@ -36,7 +36,7 @@ except ImportError:
     from .utils.read_musk_data import read_data as read_musk
     from .utils.read_musk_data import read_tree as read_musk_tree
 
-__DEBUG = False
+__DEBUG = True
 DATA_SELECT = 'i'
 DEFAULT_K = 10
 # sys.setrecursionlimit(50000)
@@ -220,6 +220,7 @@ def gen_missing_dataset(data, joint):
 
 def universe_anonymizer(argv):
     LEN_ARGV = len(argv)
+    return_dict = {}
     k = 10
     # get value from argv
     try:
@@ -246,8 +247,6 @@ def universe_anonymizer(argv):
         RAW_DATA = read_adult()
         ATT_TREES = read_adult_tree()
     if __DEBUG:
-        RAW_DATA = RAW_DATA[:2000]
-        print "Test anonymization with %d records" % len(RAW_DATA)
         print sys.argv
     print '#' * 30
     # choose algorithm
@@ -267,37 +266,26 @@ def universe_anonymizer(argv):
         print "Mondrian"
         ALG = mondrian
     print '#' * 30
-    try:
-        FLAG = argv[2]
-    except:
-        FLAG = ''
-    if FLAG == 'k':
-        return get_result_k(ALG, ATT_TREES, RAW_DATA)
-    elif FLAG == 'qi':
-        return get_result_qi(ALG, ATT_TREES, RAW_DATA)
-    elif FLAG == 'data':
-        return get_result_dataset(ALG, ATT_TREES, RAW_DATA)
-    elif FLAG == 'one':
-        if LEN_ARGV > 3:
-            k = int(sys.argv[4])
-            return get_result_one(ALG, ATT_TREES, RAW_DATA, k)
-        else:
-            if __DEBUG:
-                cProfile.run('get_result_one(ALG, ATT_TREES, RAW_DATA)')
+    if LEN_ARGV == 2:
+        return get_result_one(ALG, ATT_TREES, RAW_DATA)
+    elif LEN_ARGV > 2:
+        for i in range(2, LEN_ARGV):
+            FLAG = argv[i]
+            print "Begin Eval " + FLAG
+            if FLAG == 'k':
+                return_dict[FLAG] = get_result_k(ALG, ATT_TREES, RAW_DATA)
+            elif FLAG == 'qi':
+                return_dict[FLAG] = get_result_qi(ALG, ATT_TREES, RAW_DATA)
+            elif FLAG == 'data':
+                return_dict[FLAG] = get_result_dataset(ALG, ATT_TREES, RAW_DATA)
             else:
-                get_result_one(ALG, ATT_TREES, RAW_DATA)
-    elif FLAG == '':
-        if __DEBUG:
-            cProfile.run('get_result_one(ALG, ATT_TREES, RAW_DATA)')
-        else:
-            return get_result_one(ALG, ATT_TREES, RAW_DATA)
-    else:
-        print "Usage: python anonymizer [a | i | m] [s | m | knn | kmember] [k | qi | data | one]"
-        print "a: adult dataset, i: INFORMS dataset, m: musk dataset"
-        print "[s: semi_partition, m: mondrian, knn: k-nnn, kmember: k-member]"
-        print "K: varying k, qi: varying qi numbers, data: varying size of dataset, \
-                one: run only once"
+                print "Usage: python anonymizer [a | i | m] [s | m | knn | kmember] [k | qi | data]"
+                print "a: adult dataset, i: INFORMS dataset, m: musk dataset"
+                print "[s: semi_partition, m: mondrian, knn: k-nnn, kmember: k-member]"
+                print "K: varying k, qi: varying qi numbers, data: varying size of dataset, \
+                        one: run only once"
     print "Finish Anonymization!!"
+    return return_dict
 
 
 if __name__ == '__main__':
