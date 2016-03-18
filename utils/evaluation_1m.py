@@ -29,45 +29,6 @@ DEFAULT_S = 5
 FAST_BREAK = 100
 
 
-def NCP(att_trees, result):
-    """
-    :param att_trees: GHs of dataset
-    :param result: anonymized dataset
-    :return: NCP of the result data
-    """
-    qi_len = len(result[0]) - 1
-    qi_range = []
-    for i in range(qi_len):
-        if isinstance(att_trees[i], NumRange):
-            qi_range.append(att_trees[i].range)
-        else:
-            qi_range.append(len(att_trees[i]['*']))
-    total_ncp = 0.0
-    for record in result:
-        total_ncp += NCP_record(att_trees, record, qi_len, qi_range)
-    total_ncp = total_ncp / len(result)
-    return total_ncp
-
-
-def NCP_record(att_trees, record, qi_len, qi_range):
-    ncp = 0.0
-    # exclude SA values(last one type [])
-    for i in range(qi_len):
-        # if leaf_num of numerator is 1, then NCP is 0
-        width = 0.0
-        if isinstance(att_trees[i], NumRange):
-            width = len(att_trees[i][record[i]]) * 1.0
-        else:
-            try:
-                float(record[i])
-            except ValueError:
-                temp = record[i].split(',')
-                width = float(temp[1]) - float(temp[0])
-        width /= qi_range[i]
-        ncp += width
-    return ncp
-
-
 def init_cover_dict(att_trees):
     global COVER_DICT
     COVER_DICT = []

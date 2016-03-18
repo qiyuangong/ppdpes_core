@@ -18,6 +18,7 @@ except ImportError:
     from .algorithm.semi_partition_missing import semi_partition_missing
     from .algorithm.mondrian import mondrian
     from .algorithm.clustering_based_k_anon import anon_k_member, anon_k_nn
+    from .algorithm.NEC_based_Anon import NEC_based_Anon
     from .algorithm.Separation_Gen import Separation_Gen
     from .algorithm.PAA import PAA
     from .algorithm.anatomize import anatomize
