@@ -15,7 +15,6 @@ class test_read_informs(unittest.TestCase):
 
     def test_read_tree(self):
         ghs = read_tree()
-
         self.assertEqual(1, 1)
 
 

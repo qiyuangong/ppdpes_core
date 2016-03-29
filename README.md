@@ -1,4 +1,4 @@
-PPDP_Kernel
+PPDP_Core
 ===========================
 
 ### Motivation 

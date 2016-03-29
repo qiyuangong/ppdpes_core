@@ -10,7 +10,7 @@ except ImportError:
 
 __DEBUG = False
 
-def read_tree(qi_index, all_att_name, is_cat, name):
+def read_tree(qi_index, is_cat, name, all_att_name):
     """read tree from data/tree_*.txt, store them in att_tree
     """
     att_names = []
@@ -84,7 +84,7 @@ def read_data(qi_index, is_cat, sa_index, name, all_att_name, missing=False):
         numeric_dict.append(dict())
     # oder categorical attributes in intuitive order
     # here, we use the appear number
-    data_file = open('data/' + name, 'rU')
+    data_file = open('data/' + name + '.data', 'rU')
     for line in data_file:
         line = line.strip()
         # remove empty and incomplete lines
