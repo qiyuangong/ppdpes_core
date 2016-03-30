@@ -29,6 +29,10 @@ My Implementation is based on Python 2.7 (not Python 3.0). Please make sure your
     # run all test cases ending with "_test.py" in test dir
     python -m unittest discover . "*_test.py"
 
+4) Test Distribution:
+
+    celery -A tasks worker --loglevel=info
+
 
 
 ## For more information:

@@ -2,7 +2,7 @@ from celery import Celery
 from anonymizer import universe_anonymizer
 import json
 
-app = Celery('ppdpes', broker="amqp://guest@dark.qygong.net//")
+app = Celery('ppdpes', backend='amqp' ,broker="amqp://jssec:ibmc51@dark.qygong.net//")
 
 @app.task
 def eval(eval_parameters):
