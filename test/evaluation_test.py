@@ -5,9 +5,11 @@ from models.gentree import GenTree
 from models.numrange import NumRange
 
 try:
-    from utils.evaluation import NCP, count_query, est_query, get_result_cover, average_relative_error
+    from utils.evaluation import count_query_1m, est_query_1m, get_result_cover_1m, average_relative_error_1m
+    from utils.evaluation import count_query, est_query, get_result_cover, average_relative_error
 except:
-    from utils.evaluation import NCP, count_query, est_query, get_result_cover, average_relative_error
+    from utils.evaluation import count_query_1m, est_query_1m, get_result_cover_1m, average_relative_error_1m
+    from utils.evaluation import count_query, est_query, get_result_cover, average_relative_error
 
 # Build a GenTree object
 ATT_TREE = {}
@@ -31,15 +33,15 @@ def init_tree():
                         '6', '7', '8', '9', '10'], dict())
 
 
-class test_Apriori_based_Anon(unittest.TestCase):
-    def test_get_result_cover(self):
+class test_Evaluation(unittest.TestCase):
+    def test_get_result_cover_1m(self):
         init_tree()
         att_trees = [ATT_TREE, ATT_TREE]
         result = [['a1', ['A', 'b1', 'b2']],
                   ['a1', ['A', 'b1']],
                   ['a2', ['A', 'b1', 'b2']],
                   ['a2', ['A', 'b2']]]
-        gen_data = get_result_cover(att_trees, result)
+        gen_data = get_result_cover_1m(att_trees, result)
         temp = [[{'a1': 1.0}, {'a1': 0.5, 'a2': 0.5, 'b1': 1.0, 'b2': 1.0}],
                 [{'a1': 1.0}, {'a1': 0.5, 'a2': 0.5, 'b1': 1.0}],
                 [{'a2': 1.0}, {'a1': 0.5, 'a2': 0.5, 'b1': 1.0, 'b2': 1.0}],
@@ -49,22 +51,47 @@ class test_Apriori_based_Anon(unittest.TestCase):
     def test_count_query(self):
         init_tree()
         att_trees = [ATT_TREE, ATT_TREE]
+        data = [['a1', 'a1'],
+                ['a2', 'a2'],
+                ['b1', 'b1'],
+                ['b2', 'b2']]
+        count = count_query(data, [0, 1], [['a1', 'b1'], ['a1', 'b1']])
+        self.assertEqual(count, 2)
+
+    def test_count_query_1m(self):
+        init_tree()
+        att_trees = [ATT_TREE, ATT_TREE]
         data = [['a1', ['a1', 'b1', 'b2']],
                 ['a1', ['a2', 'b1']],
                 ['a2', ['a2', 'b1', 'b2']],
                 ['a2', ['a1', 'a2', 'b2']]]
-        count = count_query(data, [0, 1], [['a1', 'a2'], [['a2', 'b1'], ['a1', 'b1', 'b2']]])
+        count = count_query_1m(data, [0, 1], [['a1', 'a2'], [['a2', 'b1'], ['a1', 'b1', 'b2']]])
         self.assertEqual(count, 2)
 
     def test_est_query(self):
+        init_tree()
+        att_trees = [ATT_TREE, ATT_TREE]
+        result = [['A', 'a1'],
+                  ['A', 'a2'],
+                  ['B', 'b1'],
+                  ['B', 'b2']]
+        gen_data = get_result_cover(att_trees, result)
+        est = est_query(gen_data, [0, 1], [['a1', 'b1'], ['a1', 'b1']])
+        try:
+            self.assertEqual(est, 1)
+        except AssertionError:
+            print gen_data
+            self.assertEqual(0, 1)
+
+    def test_est_query_1m(self):
         init_tree()
         att_trees = [ATT_TREE, ATT_TREE]
         result = [['a1', ['A', 'b1', 'b2']],
                   ['a1', ['A', 'b1']],
                   ['a2', ['A', 'b1', 'b2']],
                   ['a2', ['A', 'b2']]]
-        gen_data = get_result_cover(att_trees, result)
-        est = est_query(gen_data, [0, 1], [['a1', 'a2'], [['a2', 'b1'], ['a1', 'b1', 'b2']]])
+        gen_data = get_result_cover_1m(att_trees, result)
+        est = est_query_1m(gen_data, [0, 1], [['a1', 'a2'], [['a2', 'b1'], ['a1', 'b1', 'b2']]])
         try:
             self.assertEqual(est, 2.5)
         except AssertionError:
@@ -74,6 +101,19 @@ class test_Apriori_based_Anon(unittest.TestCase):
     def test_are(self):
         init_tree()
         att_trees = [ATT_TREE, ATT_TREE]
+        data = [['a1', 'a1'],
+                ['a2', 'a2'],
+                ['b1', 'b1'],
+                ['b2', 'b2']]
+        result = [['A', 'a1'],
+                  ['A', 'a2'],
+                  ['B', 'b1'],
+                  ['B', 'b2']]
+        are = average_relative_error(att_trees, data, result, 1, 5)
+
+    def test_are_1m(self):
+        init_tree()
+        att_trees = [ATT_TREE, ATT_TREE]
         data = [['a1', ['a1', 'b1', 'b2']],
                 ['a1', ['a2', 'b1']],
                 ['a2', ['a2', 'b1', 'b2']],
@@ -82,18 +122,18 @@ class test_Apriori_based_Anon(unittest.TestCase):
                   ['a1', ['A', 'b1']],
                   ['a2', ['A', 'b1', 'b2']],
                   ['a2', ['A', 'b2']]]
-        are = average_relative_error(att_trees, data, result, 1, 5)
+        are = average_relative_error_1m(att_trees, data, result, 1, 5)
         # self.assertEqual(are, 0.5)
 
-    def test_ncp(self):
-        init_tree()
-        att_trees = [NUM_RANGE, ATT_TREE]
-        result = [['1', 'A'],
-                  ['1', 'A'],
-                  ['2,7', 'B'],
-                  ['2,6', 'A']]
-        ncp = NCP(att_trees, result, False)
-        self.assertTrue(abs(ncp - 0.75) < 0.05)
+    # def test_ncp(self):
+    #     init_tree()
+    #     att_trees = [NUM_RANGE, ATT_TREE]
+    #     result = [['1', 'A'],
+    #               ['1', 'A'],
+    #               ['2,7', 'B'],
+    #               ['2,6', 'A']]
+    #     ncp = NCP(att_trees, result, False)
+    #     self.assertTrue(abs(ncp - 0.75) < 0.05)
 
 if __name__ == '__main__':
     unittest.main()

@@ -63,7 +63,6 @@ def get_tran_range(att_tree, tran):
 
 
 def get_qi_range(att_trees, record, qi_len):
-    prob = 1.0
     cover_set = []
     for i in range(qi_len):
         qi_value = record[i]
@@ -86,7 +85,7 @@ def get_qi_range(att_trees, record, qi_len):
     return cover_set
 
 
-def get_result_cover(att_trees, result):
+def get_1m_result_cover(att_trees, result):
     init_cover_dict(att_trees)
     qi_len = len(result[0]) - 1
     gen_result = []
@@ -100,13 +99,13 @@ def get_result_cover(att_trees, result):
     return gen_result
 
 
-def count_query(data, att_select, value_select):
+def count_query_1m(data, att_select, value_select):
     """input query att_select and value_select,return count()
     """
     count = 0
-    lenquery = len(att_select)
+    len_query = len(att_select)
     for record in data:
-        for i in range(lenquery - 1):
+        for i in range(len_query - 1):
             # check qid part
             index = att_select[i]
             value = value_select[i]
@@ -197,15 +196,15 @@ def count_query(data, att_select, value_select):
 #     return count
 
 
-def est_query(gen_data, att_select, value_select):
+def est_query_1m(gen_data, att_select, value_select):
     """estimate aggregate result according to
     att_select and value_select, return count()
     """
     count = 0.0
-    lenquery = len(att_select)
+    len_query = len(att_select)
     for record in gen_data:
         est_qi = 1.0
-        for i in range(lenquery - 1):
+        for i in range(len_query - 1):
             # check qid part
             att_prob = 0
             index = att_select[i]
@@ -236,15 +235,15 @@ def est_query(gen_data, att_select, value_select):
     return count
 
 
-def average_relative_error(att_trees, data, result, qd=DEFAULT_QD, s=DEFAULT_S):
-    """return average relative error of anonmized microdata,
-    qd denote the query dimensionality, b denot seleciton of query
+def average_relative_error_1m(att_trees, data, result, qd=DEFAULT_QD, s=DEFAULT_S):
+    """return average relative error of anonymized microdata,
+    qd denote the query dimensionality, b denotes selection of query
     """
     if _DEBUG:
         print "qd=%d s=%d" % (qd, s)
         print "size of raw data %d" % len(data)
         print "size of result data %d" % len(result)
-    gen_data = get_result_cover(att_trees, result)
+    gen_data = get_1m_result_cover(att_trees, result)
     are = 0.0
     len_att = len(att_trees)
     blist = []
@@ -268,7 +267,7 @@ def average_relative_error(att_trees, data, result, qd=DEFAULT_QD, s=DEFAULT_S):
         print "b %s" % blist
     # query times, normally it's 1000. But query 1000 need more than 10h
     # so we limited query times to 100
-    zeroare = 0
+    zeroare, turn = 0, 0
     for turn in range(1, QUERY_TIME + 1):
         att_select = []
         value_select = []
@@ -287,9 +286,9 @@ def average_relative_error(att_trees, data, result, qd=DEFAULT_QD, s=DEFAULT_S):
             temp = random.sample(att_cover[index], blist[index])
             value_select.append(temp)
         # pdb.set_trace()
-        act = count_query(data, att_select, value_select)
+        act = count_query_1m(data, att_select, value_select)
         if act != 0:
-            est = est_query(gen_data, att_select, value_select)
+            est = est_query_1m(gen_data, att_select, value_select)
             are += abs(act - est) * 1.0 / act
         else:
             zeroare += 1
