@@ -26,3 +26,9 @@ class NumRange(object):
         for i, v in enumerate(sort_value):
             self.dict[v] = i
         self.value = sort_value[0] + ',' + sort_value[-1]
+
+    def __len__(self):
+        """
+        return number of leaf node covered by current node
+        """
+        return self.range

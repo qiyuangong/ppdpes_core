@@ -6,12 +6,12 @@ import random
 import pdb
 
 # Build a GenTree object
-ATT_TREE = []
+ATT_TREES = []
 
 
 def init():
-    global ATT_TREE
-    ATT_TREE = []
+    global ATT_TREES
+    ATT_TREES = []
     tree_temp = {}
     tree = GenTree('*')
     tree_temp['*'] = tree
@@ -27,8 +27,8 @@ def init():
         tree_temp[str(i)] = t
     numrange = NumRange(['1', '2', '3', '4', '5',
                         '6', '7', '8', '9', '10'], dict())
-    ATT_TREE.append(tree_temp)
-    ATT_TREE.append(numrange)
+    ATT_TREES.append(tree_temp)
+    ATT_TREES.append(numrange)
 
 
 class functionTest(unittest.TestCase):
@@ -42,7 +42,7 @@ class functionTest(unittest.TestCase):
                 ['4', '1', 'hha'],
                 ['4', '3', 'hha'],
                 ['4', '3', 'hha']]
-        result, eval_r = clustering_based_k_anon(ATT_TREE, data, 'kmember', 2)
+        result, eval_r = clustering_based_k_anon(ATT_TREES, data, 'kmember', 2)
         try:
             self.assertTrue(abs(eval_r[0] - 0) < 0.05)
         except AssertionError:
@@ -60,7 +60,7 @@ class functionTest(unittest.TestCase):
                 ['4', '2', 'hha'],
                 ['4', '3', 'hha'],
                 ['4', '4', 'hha']]
-        result, eval_r = clustering_based_k_anon(ATT_TREE, data, 'kmember', 2)
+        result, eval_r = clustering_based_k_anon(ATT_TREES, data, 'kmember', 2)
         try:
             self.assertTrue(abs(eval_r[0] - 2.77) < 0.05)
         except AssertionError:
@@ -78,7 +78,7 @@ class functionTest(unittest.TestCase):
                 ['4', '1', 'hha'],
                 ['4', '3', 'hha'],
                 ['4', '3', 'hha']]
-        result, eval_r = clustering_based_k_anon(ATT_TREE, data, 'knn', 2)
+        result, eval_r = clustering_based_k_anon(ATT_TREES, data, 'knn', 2)
         try:
             self.assertTrue(abs(eval_r[0] -0) < 0.05)
         except AssertionError:
@@ -96,7 +96,7 @@ class functionTest(unittest.TestCase):
                 ['4', '2', 'hha'],
                 ['4', '3', 'hha'],
                 ['4', '4', 'hha']]
-        result, eval_r = clustering_based_k_anon(ATT_TREE, data, 'knn', 2)
+        result, eval_r = clustering_based_k_anon(ATT_TREES, data, 'knn', 2)
         try:
             self.assertTrue(abs(eval_r[0] - 2.77) < 0.05)
         except AssertionError:

@@ -9,12 +9,12 @@ import random
 import pdb
 
 # Build a GenTree object
-ATT_TREE = []
+ATT_TREES = []
 
 
 def init():
-    global ATT_TREE
-    ATT_TREE = []
+    global ATT_TREES
+    ATT_TREES = []
     tree_temp = {}
     tree = GenTree('*')
     tree_temp['*'] = tree
@@ -30,8 +30,8 @@ def init():
         tree_temp[str(i)] = t
     numrange = NumRange(['1', '2', '3', '4', '5',
                         '6', '7', '8', '9', '10'], dict())
-    ATT_TREE.append(tree_temp)
-    ATT_TREE.append(numrange)
+    ATT_TREES.append(tree_temp)
+    ATT_TREES.append(numrange)
 
 
 class functionTest(unittest.TestCase):
@@ -45,7 +45,7 @@ class functionTest(unittest.TestCase):
                 ['4', '2', 'hha'],
                 ['4', '3', 'hha'],
                 ['4', '4', 'hha']]
-        result, eval_r = mondrian(ATT_TREE, data, 2)
+        result, eval_r = mondrian(ATT_TREES, data, 2)
         # print result
         # print eval_r
         self.assertTrue(abs(eval_r[0] - 200.0 / 72) < 0.05)
@@ -60,7 +60,7 @@ class functionTest(unittest.TestCase):
                 ['4', '1', 'hha'],
                 ['1', '1', 'hha'],
                 ['2', '1', 'hha']]
-        result, eval_r = mondrian(ATT_TREE, data, 2)
+        result, eval_r = mondrian(ATT_TREES, data, 2)
         # print result
         # print eval_r
         self.assertTrue(abs(eval_r[0] - 100.0 / 8) < 0.05)
@@ -75,7 +75,7 @@ class functionTest(unittest.TestCase):
                 ['4', '?', 'hha'],
                 ['4', '3', 'hha'],
                 ['4', '4', 'hha']]
-        result, eval_r = mondrian(ATT_TREE, data, 2)
+        result, eval_r = mondrian(ATT_TREES, data, 2)
         # print result
         # print eval_r
         self.assertTrue(abs(eval_r[0] - 200.0 / 144) < 0.05)
@@ -90,7 +90,7 @@ class functionTest(unittest.TestCase):
                 ['4', '?', 'hha'],
                 ['4', '3', 'hha'],
                 ['4', '4', 'hha']]
-        result, eval_r = mondrian_delete_missing(ATT_TREE, data, 2)
+        result, eval_r = mondrian_delete_missing(ATT_TREES, data, 2)
         # print result
         # print eval_r
         self.assertTrue(abs(eval_r[0] - 51.38) < 0.05)
@@ -105,7 +105,7 @@ class functionTest(unittest.TestCase):
                 ['4', '?', 'hha'],
                 ['4', '3', 'hha'],
                 ['4', '4', 'hha']]
-        result, eval_r = mondrian_split_missing(ATT_TREE, data, 2)
+        result, eval_r = mondrian_split_missing(ATT_TREES, data, 2)
         # print result
         # print eval_r
         self.assertTrue(abs(eval_r[0] - 200.0 / 144) < 0.05)
