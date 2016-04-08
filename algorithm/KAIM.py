@@ -168,8 +168,8 @@ def entropy_diff(record, gen_record):
 
 def entropy_distance(record, cluster):
     mid_after = middle(record, cluster.middle)
-    entropy_gen = entropy_diff(record, mid_after)
-    return (len(cluster) + 1) * entropy_gen
+    return entropy_diff(record, mid_after) +\
+           len(cluster) * entropy_diff(cluster.middle, mid_after)
 
 
 def NCP(mid):
