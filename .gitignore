@@ -6,7 +6,6 @@ output/*
 
 # C extensions
 *.so
-ftp
 # Packages
 *.egg
 *.egg-info

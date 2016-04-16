@@ -23,6 +23,7 @@ except ImportError:
     from .algorithm.PAA import PAA
     from .algorithm.anatomize import anatomize
 try:
+    from utils.file_utility import ftp_download, clear_dir
     from utils.read_adult_data import read_data as read_adult
     from utils.read_adult_data import read_tree as read_adult_tree
     from utils.read_informs_data import read_data as read_informs
@@ -30,6 +31,7 @@ try:
     from utils.read_musk_data import read_data as read_musk
     from utils.read_musk_data import read_tree as read_musk_tree
 except ImportError:
+    from .utils.file_utility import ftp_download
     from .utils.read_adult_data import read_data as read_adult
     from .utils.read_adult_data import read_tree as read_adult_tree
     from .utils.read_informs_data import read_data as read_informs
@@ -233,18 +235,34 @@ def universe_anonymizer(argv):
     # read dataset
     if DATA_SELECT == 'a':
         print "Adult data"
+        #dataset
+        ftp_download('adult.data', 'data/')
+        #gh
+        ftp_download('adult_', 'gh/', False)
         RAW_DATA = read_adult()
         ATT_TREES = read_adult_tree()
     elif DATA_SELECT == 'i':
         print "INFORMS data"
+        # dataset
+        ftp_download('informs.txt', 'data/')
+        # gh
+        ftp_download('informs_', 'gh/', False)
         RAW_DATA = read_informs()
         ATT_TREES = read_informs_tree(1)
     elif DATA_SELECT == 'm':
         print "Musk data"
+        # dataset
+        ftp_download('musk.data', 'data/')
+        # gh
+        ftp_download('musk_', 'gh/', False)
         RAW_DATA = read_musk()
         ATT_TREES = read_musk_tree()
     else:
         print "Adult data"
+        # dataset
+        ftp_download('adult.data', 'data/')
+        # gh
+        ftp_download('adult_', 'gh/', False)
         RAW_DATA = read_adult()
         ATT_TREES = read_adult_tree()
     if __DEBUG:
@@ -268,6 +286,9 @@ def universe_anonymizer(argv):
         ALG = mondrian
     print '#' * 30
     if LEN_ARGV == 2:
+        # clear_dir('data/')
+        # clear_dir('gh/')
+        # clear_dir('tmp/')
         return get_result_one(ALG, ATT_TREES, RAW_DATA)
     elif LEN_ARGV > 2:
         for i in range(2, LEN_ARGV):
@@ -286,6 +307,10 @@ def universe_anonymizer(argv):
                 print "K: varying k, qi: varying qi numbers, data: varying size of dataset, \
                         one: run only once"
     print "Finish Anonymization!!"
+    #clear datasets dand tmp
+    clear_dir('data/')
+    clear_dir('gh/')
+    clear_dir('tmp/')
     return return_dict
 
 

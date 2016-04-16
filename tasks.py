@@ -1,10 +1,13 @@
 from celery import Celery, shared_task
 from celery.task.http import URL
 from anonymizer import universe_anonymizer
+from utils.file_utility import ftp_upload, remove_file
 import json
 
 
 __DEBUG = True
+
+FTP_PREFIX = "ftp://223.3.79.42/QYGong/"
 
 if __DEBUG:
     HOST = '223.3.82.45'
@@ -18,6 +21,7 @@ CALL_BACK_URL = 'http://' + HOST + ':8000/PPDP/task_update'
 
 @shared_task(name='PPDP.tasks.eval')
 def eval(task_id, eval_parameters):
+    # Anonymization and Evaluation
     result =  universe_anonymizer(eval_parameters)
     # end_time = datetime.datetime.now()
     URL(CALL_BACK_URL).get_async(task_id=task_id, result=json.dumps(result['k']))
@@ -26,21 +30,26 @@ def eval(task_id, eval_parameters):
 
 @shared_task(name='PPDP.tasks.anon')
 def anon(task_id, key, anon_parameters):
+    # Anonymization
     result, eval_r = universe_anonymizer(anon_parameters)
     # end_time = datetime.datetime.now()
+    # save and upload
     anon_url = "tmp/" + str(key) + ".txt"
+    anon_file = open(anon_url, 'w')
+    for record in result:
+        try:
+            line = ';'.join(record) + '\n'
+        except:
+            # 1m dataset
+            line = ';'.join(record[:-1]) + '|' + ';'.join(record[-1]) + '\n'
+        anon_file.write(line)
+    anon_file.close()
+    ftp_upload(str(key) + ".txt", "tmp/")
     anon_r = dict()
-    anon_r['url'] = anon_url
+    anon_r['url'] = FTP_PREFIX + str(key) + ".txt"
     anon_r['ncp'] = eval_r[0]
     anon_r['time'] = eval_r[1]
     URL(CALL_BACK_URL).get_async(task_id=task_id, result=json.dumps(anon_r))
-    # anon_file = open(anon_url, 'w')
-    # for record in result:
-    #     try:
-    #         line = ';'.join(record) + '\n'
-    #     except:
-    #         line = ';'.join(record[:-1]) + '|' + ';'.join(record[-1]) + '\n'
-    #     anon_file.write(line)
-    # anon_file.close()
+    remove_file(str(key) + ".txt", 'tmp/')
     # anon_result = Anon_Result.objects.get(pk=anon_id)
     # return json.dumps(anon_r), end_time
