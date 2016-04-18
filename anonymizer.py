@@ -199,6 +199,7 @@ def get_result_missing(alg, att_trees, data, k=DEFAULT_K, n=10):
     print "All Running time", all_rtime
     print "Missing Pollution", all_pollution
     print '#' * 30
+    return [datasets, all_ncp, all_rtime]
 
 
 def gen_missing_dataset(data, joint):
@@ -285,12 +286,7 @@ def universe_anonymizer(argv):
         print "Mondrian"
         ALG = mondrian
     print '#' * 30
-    if LEN_ARGV == 2:
-        # clear_dir('data/')
-        # clear_dir('gh/')
-        # clear_dir('tmp/')
-        return get_result_one(ALG, ATT_TREES, RAW_DATA)
-    elif LEN_ARGV > 2:
+    if LEN_ARGV >= 2:
         for i in range(2, LEN_ARGV):
             FLAG = argv[i]
             print "Begin Eval " + FLAG
@@ -300,12 +296,14 @@ def universe_anonymizer(argv):
                 return_dict[FLAG] = get_result_qi(ALG, ATT_TREES, RAW_DATA)
             elif FLAG == 'data':
                 return_dict[FLAG] = get_result_dataset(ALG, ATT_TREES, RAW_DATA)
+            elif FLAG == 'missing':
+                return_dict[FLAG] = get_result_missing(ALG, ATT_TREES, RAW_DATA)
             else:
-                print "Usage: python anonymizer [a | i | m] [s | m | knn | kmember] [k | qi | data]"
+                print "Usage: python anonymizer [a | i | m] [s | m | knn | kmember] [k | qi | data | missing]"
                 print "a: adult dataset, i: INFORMS dataset, m: musk dataset"
                 print "[s: semi_partition, m: mondrian, knn: k-nnn, kmember: k-member]"
                 print "K: varying k, qi: varying qi numbers, data: varying size of dataset, \
-                        one: run only once"
+                        missing: varying missing rate of dataset"
     print "Finish Anonymization!!"
     #clear datasets dand tmp
     clear_dir('data/')

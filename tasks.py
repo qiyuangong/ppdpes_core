@@ -24,7 +24,7 @@ def eval(task_id, eval_parameters):
     # Anonymization and Evaluation
     result =  universe_anonymizer(eval_parameters)
     # end_time = datetime.datetime.now()
-    URL(CALL_BACK_URL).get_async(task_id=task_id, result=json.dumps(result['k']))
+    URL(CALL_BACK_URL).get_async(task_id=task_id, result=json.dumps(result))
     # return json.dumps(result), end_time
 
 
