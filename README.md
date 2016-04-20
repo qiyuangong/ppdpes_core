@@ -33,6 +33,24 @@ My Implementation is based on Python 2.7 (not Python 3.0). Please make sure your
 
     celery -A tasks worker --loglevel=info
 
+5) Parameters
+
+	# default anon
+	['dataset', 'algorithm']
+	# normal anon
+	['dataset', 'algorithm', 'anon', {k:10, data:10000, qi:[1,2,3]}]
+	# default eval
+	['dataset', 'algorithm', 'eval', 'k']
+	# normal eval
+	['dataset', 'algorithm', 'eval', 'k', 'qi', 'data']
+	
+6) anon JSON
+
+	{"anon":{"k":10, "data": 1000, "qi":[1,2,3]}}
+	
+7) eval JSON
+
+	{"eval":["k","qi","data"]}
 
 
 ## For more information:

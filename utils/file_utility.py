@@ -40,6 +40,8 @@ def ftp_download(filename, filepath, flag=True):
 
 def clear_dir(path):
     for file in os.listdir(path):
+        if '__init__' in file:
+            continue
         file_path = os.path.join(path, file)
         # print file_path
         try:

@@ -45,11 +45,19 @@ DEFAULT_K = 10
 # sys.setrecursionlimit(50000)
 
 
-def get_result_one(alg, att_trees, data, k=DEFAULT_K):
+def get_result_one(alg, att_trees, data, k=DEFAULT_K, qi_index=None):
     "run semi_partition for one time, with k=10"
     print "K=%d" % k
     data_back = copy.deepcopy(data)
-    result, eval_result = alg(att_trees, data, k)
+    if qi_index is None:
+        result, eval_result = alg(att_trees, data, k)
+    else:
+        # qi index
+        select_att_trees = [t for i, t in enumerate(len(att_trees)) if i in qi_index]
+        select_data = []
+        for record in data:
+            select_data.append([t for i, t in enumerate(len(record)) if i in qi_index])
+        result, eval_result = alg(select_att_trees, select_data, k)
     print "NCP %0.2f" % eval_result[0] + "%"
     print "Running time %0.2f" % eval_result[1] + "seconds"
     return (result, eval_result)
@@ -176,7 +184,6 @@ def get_result_missing(alg, att_trees, data, k=DEFAULT_K, n=10):
         ncp = rtime = pollution = 0.0
         for j in range(n):
             gen_missing_dataset(data, joint)
-            missing_rate(data)
             _, eval_result = alg(att_trees, data, k)
             data = copy.deepcopy(data_back)
             ncp += eval_result[0]
@@ -286,31 +293,50 @@ def universe_anonymizer(argv):
         print "Mondrian"
         ALG = mondrian
     print '#' * 30
-    if LEN_ARGV >= 2:
-        for i in range(2, LEN_ARGV):
-            FLAG = argv[i]
-            print "Begin Eval " + FLAG
-            if FLAG == 'k':
-                return_dict[FLAG] = get_result_k(ALG, ATT_TREES, RAW_DATA)
-            elif FLAG == 'qi':
-                return_dict[FLAG] = get_result_qi(ALG, ATT_TREES, RAW_DATA)
-            elif FLAG == 'data':
-                return_dict[FLAG] = get_result_dataset(ALG, ATT_TREES, RAW_DATA)
-            elif FLAG == 'missing':
-                return_dict[FLAG] = get_result_missing(ALG, ATT_TREES, RAW_DATA)
-            else:
-                print "Usage: python anonymizer [a | i | m] [s | m | knn | kmember] [k | qi | data | missing]"
-                print "a: adult dataset, i: INFORMS dataset, m: musk dataset"
-                print "[s: semi_partition, m: mondrian, knn: k-nnn, kmember: k-member]"
-                print "K: varying k, qi: varying qi numbers, data: varying size of dataset, \
-                        missing: varying missing rate of dataset"
-    print "Finish Anonymization!!"
-    #clear datasets dand tmp
-    clear_dir('data/')
-    clear_dir('gh/')
-    clear_dir('tmp/')
+    if LEN_ARGV == 2:
+        return_dict = get_result_one(ALG, ATT_TREES, RAW_DATA)
+    elif LEN_ARGV > 2:
+        if argv[2] == 'anon':
+            print "Begin Anon on Specific parameters"
+            parameter = argv[3]
+            try:
+                k = int(parameter['k'])
+            except KeyError:
+                k = DEFAULT_K
+            try:
+                data_size = int(parameter['data'])
+            except KeyError:
+                data_size = len(RAW_DATA)
+            try:
+                qi_index = parameter['qi']
+            except KeyError:
+                qi_index = None
+            return_dict = get_result_one(ALG, ATT_TREES, RAW_DATA[:data_size], k, qi_index)
+        else:
+            for i in range(3, LEN_ARGV):
+                FLAG = argv[i]
+                print "Begin Eval " + FLAG
+                if FLAG == 'k':
+                    return_dict[FLAG] = get_result_k(ALG, ATT_TREES, RAW_DATA)
+                elif FLAG == 'qi':
+                    return_dict[FLAG] = get_result_qi(ALG, ATT_TREES, RAW_DATA)
+                elif FLAG == 'data':
+                    return_dict[FLAG] = get_result_dataset(ALG, ATT_TREES, RAW_DATA)
+                elif FLAG == 'missing':
+                    return_dict[FLAG] = get_result_missing(ALG, ATT_TREES, RAW_DATA)
+                else:
+                    print "Usage: python anonymizer [a | i | m] [s | m | knn | kmember] [k | qi | data | missing]"
+                    print "a: adult dataset, i: INFORMS dataset, m: musk dataset"
+                    print "[s: semi_partition, m: mondrian, knn: k-nnn, kmember: k-member]"
+                    print "K: varying k, qi: varying qi numbers, data: varying size of dataset, \
+                            missing: varying missing rate of dataset"
+    # print "Finish Anonymization!!"
     return return_dict
 
 
 if __name__ == '__main__':
    universe_anonymizer(sys.argv[1:])
+   # clear datasets dand tmp
+   # clear_dir('data/')
+   # clear_dir('gh/')
+   clear_dir('tmp/')
