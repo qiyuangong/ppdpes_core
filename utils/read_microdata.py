@@ -10,18 +10,21 @@ except ImportError:
 
 __DEBUG = False
 
-def read_tree(qi_index, is_cat, name, all_att_name):
+def read_tree(qi_index, is_cat, name, is_rt=False):
     """read tree from data/tree_*.txt, store them in att_tree
     """
     att_names = []
     att_trees = []
     for t in qi_index:
-        att_names.append(all_att_name[t])
+        att_names.append(name + '_' + str(t))
     for i in range(len(att_names)):
         if is_cat[i]:
             att_trees.append(read_tree_file(att_names[i], name))
         else:
             att_trees.append(read_pickle_file(att_names[i], name))
+    if is_rt:
+        # read sa gh
+        att_trees.append(read_tree_file(name + '_sa', name))
     return att_trees
 
 
@@ -31,7 +34,7 @@ def read_tree_file(treename, name):
     leaf_to_path = {}
     att_tree = {}
     postfix = ".txt"
-    treefile = open('gh/' + name + '_' + treename + postfix, 'rU')
+    treefile = open('gh/' + treename + postfix, 'rU')
     att_tree['*'] = GenTree('*')
     if __DEBUG:
         print "Reading Tree" + treename
@@ -62,18 +65,14 @@ def read_pickle_file(att_name, name):
     read pickle file for numeric attributes
     return numrange object
     """
-    try:
-        static_file = open('tmp/' + name + '_' + att_name + '_static.pickle', 'rb')
+    with open('tmp/' + att_name + '_static.pickle', 'rb') as static_file:
         (numeric_dict, sort_value) = pickle.load(static_file)
-    except:
-        print "Pickle file not exists!!"
-    static_file.close()
-    result = NumRange(sort_value, numeric_dict)
-    return result
+        result = NumRange(sort_value, numeric_dict)
+        return result
 
 #############################################################
 
-def read_data(qi_index, is_cat, sa_index, name, all_att_name, missing=False):
+def read_data(qi_index, is_cat, sa_index, name, missing=False, is_rt=False):
     """
     read microdata for *.txt and return read data
     """
@@ -105,12 +104,13 @@ def read_data(qi_index, is_cat, sa_index, name, all_att_name, missing=False):
                 except KeyError:
                     numeric_dict[i][temp[index]] = 1
             ltemp.append(temp[index])
-        ltemp.append(temp[sa_index])
+        if is_rt:
+            ltemp.append(temp[sa_index].split(';'))
         data.append(ltemp)
     # pickle numeric attributes and get NumRange
     for i in range(QI_num):
         if is_cat[i] is False:
-            static_file = open('tmp/' + name +'_' + all_att_name[qi_index[i]] + '_static.pickle', 'wb')
+            static_file = open('tmp/' + name +'_' + str(qi_index[i]) + '_static.pickle', 'wb')
             sort_value = list(numeric_dict[i].keys())
             sort_value.sort(cmp=cmp_str)
             pickle.dump((numeric_dict[i], sort_value), static_file)

@@ -16,34 +16,30 @@ class test_read_microdata(unittest.TestCase):
 
     def test_read_adult_data(self):
         data = read_data([0, 1, 4, 5, 6, 8, 9, 13], [False, True, False, True, True, True, True, True], -1,
-                         'adult', ['age', 'workclass', 'final_weight', 'education',
-                          'education_num', 'marital_status', 'occupation', 'relationship',
-                          'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week',
-                          'native_country', 'class'])
+                         'adult')
         self.assertEqual(len(data), 30162)
 
     def test_read_adult_data_missing(self):
         data = read_data([0, 1, 4, 5, 6, 8, 9, 13], [False, True, False, True, True, True, True, True], -1,
-                         'adult', ['age', 'workclass', 'final_weight', 'education',
-                                   'education_num', 'marital_status', 'occupation', 'relationship',
-                                   'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week',
-                                   'native_country', 'class'], True)
+                         'adult', True)
         self.assertEqual(len(data), 32561)
 
     def test_read_adult_tree(self):
         att_trees = read_tree([0, 1, 4, 5, 6, 8, 9, 13], [False, True, False, True, True, True, True, True],
-                         'adult', ['age', 'workclass', 'final_weight', 'education',
-                                   'education_num', 'marital_status', 'occupation', 'relationship',
-                                   'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week',
-                                   'native_country', 'class'])
+                         'adult')
 
         self.assertEqual(len(att_trees), 8)
 
     def test_read_musk_data(self):
         data = read_data(range(2,168), [False] * 168, -1,
-                         'musk', [str(t) for t in range(168)])
+                         'musk')
         self.assertEqual(len(data), 7074)
 
+    def test_read_informs_data(self):
+        data = read_data([3, 4, 6, 13, 16], [True, True, True, True, False, True], -1, 'informs', True)
+
+    def test_read_informs_tree(self):
+        data = read_tree([3, 4, 6, 13, 16], [True, True, True, True, False, True], 'informs', True)
 
 if __name__ == '__main__':
     unittest.main()

@@ -13,10 +13,16 @@ I used **both adult and INFORMS** dataset in this implementation. For clarificat
 ### Usage:
 My Implementation is based on Python 2.7 (not Python 3.0). Please make sure your Python environment is collect installed. You can run Mondrian in following steps: 
 
-1) Download (or clone) the whole project. 
+1) Download (or clone) the whole project.
 
-2) Run "anonymized.py" in root dir with CLI.
+2) Check datasets and generalization hierarchies
 
+    #dataset
+    adult.data
+    # gh for qid_index = 1
+    adult_1.txt
+
+3) Run "anonymized.py" in root dir with CLI.
 
 	# run Mondrian with default K(K=10)
 	python anonymizer.py 
@@ -24,16 +30,16 @@ My Implementation is based on Python 2.7 (not Python 3.0). Please make sure your
 	# run Mondrian with K=20
 	python anonymized.py 20
 
-3) Run unit test in root dir with CLI.
+4) Run unit test in root dir with CLI.
 
     # run all test cases ending with "_test.py" in test dir
     python -m unittest discover . "*_test.py"
 
-4) Test Distribution:
+5) Test Distribution:
 
     celery -A tasks worker --loglevel=info
 
-5) Parameters
+6) Parameters
 
 	# default anon
 	['dataset', 'algorithm']
@@ -44,12 +50,11 @@ My Implementation is based on Python 2.7 (not Python 3.0). Please make sure your
 	# normal eval
 	['dataset', 'algorithm', 'eval', 'k', 'qi', 'data']
 	
-6) anon JSON
+7) JSON for PPDPES
 
+    # anon JSON
 	{"anon":{"k":10, "data": 1000, "qi":[1,2,3]}}
-	
-7) eval JSON
-
+    #eval JSON
 	{"eval":["k","qi","data"]}
 
 
