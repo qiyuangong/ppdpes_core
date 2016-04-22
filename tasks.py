@@ -3,6 +3,7 @@ from celery.task.http import URL
 from anonymizer import universe_anonymizer
 from utils.file_utility import ftp_upload, remove_file
 import json
+import urllib
 
 
 __DEBUG = True
@@ -46,7 +47,7 @@ def anon(task_id, key, anon_parameters):
     anon_file.close()
     ftp_upload(str(key) + ".txt", "tmp/")
     anon_r = dict()
-    anon_r['url'] = FTP_PREFIX + str(key) + ".txt"
+    anon_r['url'] = FTP_PREFIX + urllib.quote(str(key) + ".txt")
     anon_r['ncp'] = eval_r[0]
     anon_r['time'] = eval_r[1]
     URL(CALL_BACK_URL).get_async(task_id=task_id, result=json.dumps(anon_r))
