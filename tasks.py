@@ -21,7 +21,7 @@ app = Celery('tasks', backend='amqp' ,broker='amqp://jssec:ibmc51@' + HOST + '//
 CALL_BACK_URL = 'http://' + HOST + ':8000/PPDP/task_update'
 
 @shared_task(name='PPDP.tasks.eval')
-def eval(task_id, eval_parameters):
+def eval(task_id, key, eval_parameters):
     # Anonymization and Evaluation
     result =  universe_anonymizer(eval_parameters)
     # end_time = datetime.datetime.now()

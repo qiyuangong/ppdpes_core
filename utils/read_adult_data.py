@@ -102,11 +102,11 @@ def read_pickle_file(att_name):
     try:
         static_file = open('tmp/adult_' + att_name + '_static.pickle', 'rb')
         (numeric_dict, sort_value) = pickle.load(static_file)
+        static_file.close()
+        result = NumRange(sort_value, numeric_dict)
+        return result
     except:
         print "Pickle file not exists!!"
-    static_file.close()
-    result = NumRange(sort_value, numeric_dict)
-    return result
 
 
 def read_tree_file(treename):
