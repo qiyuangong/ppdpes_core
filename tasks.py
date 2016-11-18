@@ -6,7 +6,7 @@ import json
 import urllib
 
 
-__DEBUG = True
+__DEBUG = False
 
 FTP_PREFIX = "ftp://223.3.79.42/QYGong/"
 
@@ -15,15 +15,16 @@ if __DEBUG:
 else:
     HOST = 'dark.qygong.net'
 
-app = Celery('tasks', backend='amqp' ,broker='amqp://jssec:ibmc51@' + HOST + '//')
+app = Celery('tasks', backend='amqp', broker='amqp://jssec:ibmc51@' + HOST + '//')
 
 # CALL_BACK_URL = 'http://223.3.82.45:8000/PPDP/task_update'
-CALL_BACK_URL = 'http://' + HOST + ':8000/PPDP/task_update'
+CALL_BACK_URL = 'http://' + HOST + ':8888/PPDP/task_update'
+
 
 @shared_task(name='PPDP.tasks.eval')
 def eval(task_id, key, eval_parameters):
     # Anonymization and Evaluation
-    result =  universe_anonymizer(eval_parameters)
+    result = universe_anonymizer(eval_parameters)
     # end_time = datetime.datetime.now()
     URL(CALL_BACK_URL).get_async(task_id=task_id, result=json.dumps(result))
     # return json.dumps(result), end_time

@@ -53,10 +53,10 @@ def get_result_one(alg, att_trees, data, k=DEFAULT_K, qi_index=None):
         result, eval_result = alg(att_trees, data, k)
     else:
         # qi index
-        select_att_trees = [t for i, t in enumerate(len(att_trees)) if i in qi_index]
+        select_att_trees = [t for i, t in enumerate(att_trees) if i in qi_index]
         select_data = []
         for record in data:
-            select_data.append([t for i, t in enumerate(len(record)) if i in qi_index])
+            select_data.append([t for i, t in enumerate(record) if i in qi_index])
         result, eval_result = alg(select_att_trees, select_data, k)
     print "NCP %0.2f" % eval_result[0] + "%"
     print "Running time %0.2f" % eval_result[1] + "seconds"
