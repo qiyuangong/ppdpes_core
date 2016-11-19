@@ -1,9 +1,38 @@
-"""
-run semi_partition with given parameters
-"""
-
 # !/usr/bin/env python
 # coding=utf-8
+
+# ***********************************
+# Qiyuan Gong
+# qiyuangong@gmail.com
+# 2016-11-19
+# ***********************************
+# Before you start using this program, please make sure
+# you understand following information:
+# ***********************************
+# Data type:
+# RT-data ['a1', ['a1', 'b1', 'b2']]
+# Relational data [18, 'M', 'Married']
+# Set-valued data ['a1', 'b1', 'b2']
+# ***********************************
+# Paramters:
+# k, qi (also called d in my thesis), l, n (size of dataset)
+# ***********************************
+# Information Loss: NCP and ARE
+# ***********************************
+# About PPDPES
+# ***********************************
+# Anon:
+# Anon means anonymized dataset with given parameters.
+# This procedure runs anonymization only once and generates anoymized
+# dataset from the raw dataset.
+# ***********************************
+# Eval:
+# Eval means evaluted algorithm with given parameters.
+# This procedure runs chosen algorithms mulitple times to get
+# enough outputs on given parameters.
+# ***********************************
+
+
 import sys, copy, random, cProfile
 try:
     from algorithm.semi_partition import semi_partition
@@ -229,6 +258,22 @@ def gen_missing_dataset(data, joint):
         joint -= 1
 
 
+# TODO ARE
+def are():
+    """
+    are for relational dataset
+    """
+    pass
+
+
+# TODO ARE_1M
+def are_1m():
+    """
+    are for 1:M dataset
+    """
+    pass
+
+
 def universe_anonymizer(argv):
     LEN_ARGV = len(argv)
     return_dict = {}
@@ -243,9 +288,9 @@ def universe_anonymizer(argv):
     # read dataset
     if DATA_SELECT == 'a':
         print "Adult data"
-        #dataset
+        # dataset
         ftp_download('adult.data', 'data/')
-        #gh
+        # gh
         ftp_download('adult_', 'gh/', False)
         RAW_DATA = read_adult()
         ATT_TREES = read_adult_tree()
@@ -335,8 +380,8 @@ def universe_anonymizer(argv):
 
 
 if __name__ == '__main__':
-   universe_anonymizer(sys.argv[1:])
-   # clear datasets dand tmp
-   # clear_dir('data/')
-   # clear_dir('gh/')
-   clear_dir('tmp/')
+    universe_anonymizer(sys.argv[1:])
+    # clear datasets dand tmp
+    # clear_dir('data/')
+    # clear_dir('gh/')
+    clear_dir('tmp/')

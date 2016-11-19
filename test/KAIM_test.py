@@ -13,6 +13,7 @@ LEN_DATA = 8
 SUPPORTS = []
 IS_CAT = [True, False]
 
+
 def init():
     global ATT_TREES, SUPPORTS
     ATT_TREES = []
@@ -133,7 +134,6 @@ class functionKAIM(unittest.TestCase):
         self.assertTrue(entropy_value(1, '1,2') - 0.3 < 0.01)
         # print 'Entropy', entropy_value(0, '1,5')
         # print 'Entropy', entropy_value(1, '1,2')
-
 
     def test_entropy_diff(self):
         init()
