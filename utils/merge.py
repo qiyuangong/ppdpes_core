@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#coding=utf-8
+# coding=utf-8
 
 # Read data and read tree fuctions for INFORMS data
 # user att ['DUID', 'PID', 'DUPERSID', 'DOBMM', 'DOBYY', 'SEX', 'RACEX', 'RACEAX', 'RACEBX', 'RACEWX', 'RACETHNX', 'HISPANX', 'HISPCAT', 'EDUCYEAR', 'Year', 'marry', 'income', 'poverty']
@@ -50,11 +50,12 @@ def merge_data():
             temp = []
             for t in conditiondata[k]:
                 temp.append(t[2])
+            # only keep one record
             hashdata[k] = list(v[0])
             hashdata[k].append(';'.join(temp))
     for k, v in hashdata.iteritems():
         data.append(v)
-    output = open('informs.data', 'w') 
+    output = open('informs.data', 'w')
     for record in data:
         # print record
         output.write(','.join(record) + '\n')

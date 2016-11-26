@@ -16,6 +16,7 @@ def ftp_upload(filename, filepath):
     session.quit()
     print "Upload Complete!"
 
+
 def ftp_download(filename, filepath, flag=True):
     print "Begin Download File to FTP"
     ftpfile = open("ftp", 'rU')
@@ -50,6 +51,7 @@ def clear_dir(path):
         except Exception as e:
             print e
 
+
 def remove_file(file, path):
     file_path = os.path.join(path, file)
     # print file_path
@@ -60,4 +62,4 @@ def remove_file(file, path):
         print e
 
 if __name__ == '__main__':
-    ftp_upload('README.md','')
+    ftp_upload('README.md', '')

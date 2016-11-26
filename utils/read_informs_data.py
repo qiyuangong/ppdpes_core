@@ -28,16 +28,16 @@ SA_INDEX = 2
 IS_CAT = [True, True, True, True, False, True]
 
 
-def read_tree(flag=0):
+def read_tree(flag=0, qi_index=[]):
     """
     read tree from data/tree_*.txt, store them in att_tree
     """
     att_names = []
     att_trees = []
-    for t in QI_INDEX:
-        att_names.append(USER_ATT[t])
+    for t in qi_index:
+        att_names.append(USER_ATT[QI_INDEX[t]])
     if flag > 0:
-        att_names.append(CONDITION_ATT[SA_INDEX])
+        att_names.append('sa')
     for i in range(len(att_names)):
         if IS_CAT[i]:
             att_trees.append(read_tree_file(att_names[i]))

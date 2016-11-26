@@ -5,7 +5,6 @@ import pdb
 
 
 _DEBUG = True
-gl_att_tree = []
 gl_data = []
 
 
@@ -28,8 +27,9 @@ def PAA(att_tree, data, K=10, L=5):
     """Using Partition to anonymize SA (transaction) partition,
     while applying Anatomize to separate QID and SA
     """
-    global gl_att_tree, gl_data
-    gl_att_tree = att_tree
+    global gl_data
+    if isinstance(att_tree, list):
+        att_tree = att_tree[-1]
     gl_data = data
     start_time = time.time()
     tran_tree = {}
@@ -55,7 +55,8 @@ def PAA(att_tree, data, K=10, L=5):
         grouped_data.append(gtemp)
     print "Begin Anatomy"
     grouped_result = anatomize(grouped_data, L)
-    print("--- %s seconds ---" % (time.time() - start_time))
+    rtime = time.time() - start_time
+    print("--- %s seconds ---" % rtime)
     # transform data format (QID1,.., QIDn, SA set, GroupID, 1/|group size|, SA_list (dict) :original SA (str) sets with prob)
     # 1/|group size|, original SA sets with prob (dict) will be used in evaluation
     for index, group in enumerate(grouped_result):
@@ -85,4 +86,4 @@ def PAA(att_tree, data, K=10, L=5):
             temp.append(1.0 / length)
             temp.append(SA_list)
             result.append(temp)
-    return result
+    return (result, (0, 0, rtime))

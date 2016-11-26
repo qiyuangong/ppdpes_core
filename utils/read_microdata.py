@@ -61,6 +61,7 @@ def read_tree_file(treename, name):
     treefile.close()
     return att_tree
 
+
 def read_pickle_file(att_name, name):
     """
     read pickle file for numeric attributes
@@ -72,6 +73,7 @@ def read_pickle_file(att_name, name):
         return result
 
 #############################################################
+
 
 def read_data(qi_index, is_cat, sa_index, name, missing=False, is_rt=False):
     """
@@ -112,7 +114,7 @@ def read_data(qi_index, is_cat, sa_index, name, missing=False, is_rt=False):
     # pickle numeric attributes and get NumRange
     for i in range(QI_num):
         if is_cat[i] is False:
-            static_file = open('tmp/' + name +'_' + str(qi_index[i]) + '_static.pickle', 'wb')
+            static_file = open('tmp/' + name + '_' + str(qi_index[i]) + '_static.pickle', 'wb')
             sort_value = list(numeric_dict[i].keys())
             sort_value.sort(cmp=cmp_str)
             pickle.dump((numeric_dict[i], sort_value), static_file)

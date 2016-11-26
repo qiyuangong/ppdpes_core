@@ -55,8 +55,9 @@ def APA(att_tree, data, K=10, L=5):
     while applying Anatomize to separate QID and SA
     """
     # Initialization
-    global gl_att_tree, gl_data
-    gl_att_tree = att_tree
+    global gl_data
+    if isinstance(att_tree, list):
+        att_tree = att_tree[-1]
     gl_data = data
     start_time = time.time()
     result = []
