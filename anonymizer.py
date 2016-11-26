@@ -41,6 +41,8 @@ try:
     from algorithm.clustering_based_k_anon import anon_k_member, anon_k_nn
     from algorithm.Separation_Gen import Separation_Gen
     from algorithm.PAA import PAA
+    from algorithm.APA import APA
+    from algorithm.m_generalization import m_generalization
     from algorithm.anatomize import anatomize
 except ImportError:
     from .algorithm.semi_partition import semi_partition
@@ -49,6 +51,7 @@ except ImportError:
     from .algorithm.clustering_based_k_anon import anon_k_member, anon_k_nn
     from .algorithm.NEC_based_Anon import NEC_based_Anon
     from .algorithm.Separation_Gen import Separation_Gen
+    from .algorithm.m_generalization import m_generalization
     from .algorithm.PAA import PAA
     from .algorithm.anatomize import anatomize
 try:
@@ -334,6 +337,12 @@ def universe_anonymizer(argv):
     elif ALG_SELECT == 'kmember':
         print "k-member"
         ALG = anon_k_member
+    elif ALG_SELECT == 'apa':
+        ALG = APA
+    elif ALG_SELECT == 'paa':
+        ALG = PAA
+    elif ALG_SELECT == '1m':
+        ALG = m_generalization
     else:
         print "Mondrian"
         ALG = mondrian

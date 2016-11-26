@@ -9,7 +9,7 @@ ATT_TREES = []
 DATA = []
 
 
-def Separation_Gen(att_trees, data, k=10, l=5):
+def m_generalization(att_trees, data, k=10, l=5):
     """Using partition_for_transaction to anonymize SA (transaction) partition,
     while applying anatomy to separate QID and SA
     return (result, eval_result)

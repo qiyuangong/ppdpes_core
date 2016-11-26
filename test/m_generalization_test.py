@@ -1,6 +1,6 @@
 import unittest
 from models.gentree import GenTree
-from algorithm.Separation_Gen import Separation_Gen
+from algorithm.m_generalization import m_generalization
 
 # Build a GenTree object
 ATT_TREE = {}
@@ -33,7 +33,7 @@ class test_1M_Generalization(unittest.TestCase):
                 ['b1', ['a1', 'a2', 'b2']],
                 ['b2', ['a1', 'a2', 'b2']],
                 ['a1', ['a1', 'a2', 'b1', 'b2']]]
-        result, eval_result = Separation_Gen(att_trees, data, 2, 2)
+        result, eval_result = m_generalization(att_trees, data, 2, 2)
         self.assertTrue(abs(eval_result[0] - 0) <= 0.001)
         self.assertTrue(abs(eval_result[1] - 350.0 / 17) <= 0.001)
 
@@ -44,7 +44,7 @@ class test_1M_Generalization(unittest.TestCase):
                 ['a1', ['a2', 'b1']],
                 ['a2', ['a2', 'b1', 'b2']],
                 ['a2', ['a1', 'a2', 'b2']]]
-        result, eval_result = Separation_Gen(att_trees, data, 2, 2)
+        result, eval_result = m_generalization(att_trees, data, 2, 2)
         self.assertTrue(abs(eval_result[0] - 0) <= 0.001)
         self.assertTrue(abs(eval_result[1] - 350.0 / 11) <= 0.001)
 

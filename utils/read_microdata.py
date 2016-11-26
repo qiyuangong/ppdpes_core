@@ -10,6 +10,7 @@ except ImportError:
 
 __DEBUG = False
 
+
 def read_tree(qi_index, is_cat, name, is_rt=False):
     """read tree from data/tree_*.txt, store them in att_tree
     """
@@ -105,6 +106,7 @@ def read_data(qi_index, is_cat, sa_index, name, missing=False, is_rt=False):
                     numeric_dict[i][temp[index]] = 1
             ltemp.append(temp[index])
         if is_rt:
+            # get set-valued data
             ltemp.append(temp[sa_index].split(';'))
         data.append(ltemp)
     # pickle numeric attributes and get NumRange
