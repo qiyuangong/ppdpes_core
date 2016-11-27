@@ -21,6 +21,7 @@ Main module of Anatomize.
 
 import random
 import heapq
+from utils.utility import list_to_str
 
 
 _DEBUG = False
@@ -90,7 +91,12 @@ def build_SA_bucket(data):
     bucket_heap = []
     # Assign SA into buckets
     for record in data:
-        sa_value = record[-1]
+        if isinstance(data[0][-1], list):
+            # rt data
+            sa_value = list_to_str(record[-1])
+        else:
+            # relational data
+            sa_value = record[-1]
         try:
             buckets[sa_value].append(record)
         except KeyError:

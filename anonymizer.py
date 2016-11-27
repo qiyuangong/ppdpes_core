@@ -34,6 +34,8 @@
 
 
 import sys, copy, random, cProfile
+import json
+import pdb
 try:
     from algorithm.semi_partition import semi_partition
     from algorithm.semi_partition_missing import semi_partition_missing
@@ -77,7 +79,7 @@ DEFAULT_K = 10
 # sys.setrecursionlimit(50000)
 
 
-def get_result_one(alg, att_trees, data, k=DEFAULT_K, qi_index=None):
+def get_result_one(alg, att_trees, data, k=DEFAULT_K, qi_index=None, rt=False):
     "run semi_partition for one time, with k=10"
     print "K=%d" % k
     data_back = copy.deepcopy(data)
@@ -85,13 +87,21 @@ def get_result_one(alg, att_trees, data, k=DEFAULT_K, qi_index=None):
         result, eval_result = alg(att_trees, data, k)
     else:
         # qi index
-        select_att_trees = [t for i, t in enumerate(att_trees) if i in qi_index]
+        # select_att_trees = [t for i, t in enumerate(att_trees) if i in qi_index]
         select_data = []
         for record in data:
-            select_data.append([t for i, t in enumerate(record) if i in qi_index])
-        result, eval_result = alg(select_att_trees, select_data, k)
-    print "NCP %0.2f" % eval_result[0] + "%"
-    print "Running time %0.2f" % eval_result[1] + "seconds"
+            tmp = [t for i, t in enumerate(record) if i in qi_index]
+            # sa part
+            tmp.append(record[-1])
+            select_data.append(tmp)
+        result, eval_result = alg(att_trees, select_data, k)
+    if not rt:
+        print "NCP %0.2f" % eval_result[0] + "%"
+        print "Running time %0.2f" % eval_result[1] + "seconds"
+    else:
+        print "RNCP %0.2f" % eval_result[0] + "%"
+        print "TNCP %0.2f" % eval_result[1] + "%"
+        print "Running time %0.2f" % eval_result[2] + "seconds"
     return (result, eval_result)
 
 
@@ -278,6 +288,7 @@ def are_1m():
 
 
 def universe_anonymizer(argv):
+    print argv
     LEN_ARGV = len(argv)
     return_dict = {}
     k = 10
@@ -300,11 +311,11 @@ def universe_anonymizer(argv):
     elif DATA_SELECT == 'i':
         print "INFORMS data"
         # dataset
-        ftp_download('informs.txt', 'data/')
+        ftp_download('informs.data', 'data/')
         # gh
         ftp_download('informs_', 'gh/', False)
         RAW_DATA = read_informs()
-        ATT_TREES = read_informs_tree(1)
+        ATT_TREES = read_informs_tree(1, [1, 2, 3])
     elif DATA_SELECT == 'm':
         print "Musk data"
         # dataset
@@ -324,6 +335,7 @@ def universe_anonymizer(argv):
     if __DEBUG:
         print sys.argv
     print '#' * 30
+    RT = False
     # choose algorithm
     if ALG_SELECT == 'm':
         print "Mondrian"
@@ -338,10 +350,16 @@ def universe_anonymizer(argv):
         print "k-member"
         ALG = anon_k_member
     elif ALG_SELECT == 'apa':
+        RT = True
+        print "APA"
         ALG = APA
     elif ALG_SELECT == 'paa':
+        RT = True
+        print "PAA"
         ALG = PAA
     elif ALG_SELECT == '1m':
+        RT = True
+        print "1:M-Generlization"
         ALG = m_generalization
     else:
         print "Mondrian"
@@ -353,6 +371,9 @@ def universe_anonymizer(argv):
         if argv[2] == 'anon':
             print "Begin Anon on Specific parameters"
             parameter = argv[3]
+            if isinstance(parameter, str):
+                parameter = parameter.replace("'", "\"")
+                parameter = json.loads(parameter)
             try:
                 k = int(parameter['k'])
             except KeyError:
@@ -365,7 +386,7 @@ def universe_anonymizer(argv):
                 qi_index = parameter['qi']
             except KeyError:
                 qi_index = None
-            return_dict = get_result_one(ALG, ATT_TREES, RAW_DATA[:data_size], k, qi_index)
+            return_dict = get_result_one(ALG, ATT_TREES, RAW_DATA[:data_size], k, qi_index, RT)
         else:
             for i in range(3, LEN_ARGV):
                 FLAG = argv[i]
@@ -389,8 +410,9 @@ def universe_anonymizer(argv):
 
 
 if __name__ == '__main__':
-    universe_anonymizer(sys.argv[1:])
+    result, eval_r = universe_anonymizer(sys.argv[1:])
+    pdb.set_trace()
     # clear datasets dand tmp
     # clear_dir('data/')
     # clear_dir('gh/')
-    clear_dir('tmp/')
+    # clear_dir('tmp/')
