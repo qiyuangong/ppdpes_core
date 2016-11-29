@@ -22,7 +22,7 @@ USER_ATT = ['DUID', 'PID', 'DUPERSID', 'DOBMM', 'DOBYY', 'SEX',
             'HISPANX', 'HISPCAT', 'EDUCYEAR', 'Year', 'marry', 'income', 'poverty']
 CONDITION_ATT = ['DUID', 'DUPERSID', 'ICD9CODX', 'year']
 # 5 relational attributes and 1 transaction attribute are selected (according to Poulis's paper)
-# DOBMM DOBYY RACEX, EDUCYEAR, incom
+# DOBMM DOBYY RACEX, EDUCYEAR, income
 QI_INDEX = [3, 4, 6, 13, 15, 16]
 SA_INDEX = 2
 IS_CAT = [True, True, True, True, False, True]

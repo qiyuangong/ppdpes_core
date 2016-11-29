@@ -549,3 +549,89 @@ def NEC_based_Anon(att_trees, data, type_alg='knn', k=10, QI_num=-1):
         print "Record lost"
         pdb.set_trace()
     return (result, (ncp, rtime))
+
+
+def NEC_k_member(att_trees, data, k=10, QI_num=-1):
+    """
+    the main function of EC_based_Anon
+    """
+    type_alg = 'kmember'
+    init(att_trees, data, QI_num)
+    result = []
+    start_time = time.time()
+    nec_dict = create_nec(data)
+    if type_alg == 'knn':
+        print "Begin to KNN Cluster based on NCP"
+        clusters = clustering_knn(nec_dict.values(), k)
+    elif type_alg == 'kmember':
+        print "Begin to K-Member Cluster based on NCP"
+        clusters = clustering_kmember(nec_dict.values(), k)
+    elif type_alg == 'oka':
+        print "Begin to OKA Cluster based on NCP"
+        clusters = clustering_oka(nec_dict.values(), k)
+    else:
+        print "Please choose merge algorithm types"
+        print "knn | kmember | oka"
+        return (0, (0, 0))
+    rtime = float(time.time() - start_time)
+    ncp = 0.0
+    # pdb.set_trace()
+    for cluster in clusters:
+        final_result = []
+        for i in range(len(cluster)):
+            # do not forget to add SA!!!
+            final_result.append(cluster.gen_result + [cluster.member[i][-1]])
+        result.extend(final_result)
+        ncp += cluster.information_loss
+    ncp /= LEN_DATA
+    ncp /= QI_LEN
+    ncp *= 100
+    if __DEBUG:
+        print "NCP=", ncp
+    if len(result) != len(data):
+        print "Record lost"
+        pdb.set_trace()
+    return (result, (ncp, rtime))
+
+
+def NEC_OKA(att_trees, data, k=10, QI_num=-1):
+    """
+    the main function of EC_based_Anon
+    """
+    type_alg = 'oka'
+    init(att_trees, data, QI_num)
+    result = []
+    start_time = time.time()
+    nec_dict = create_nec(data)
+    if type_alg == 'knn':
+        print "Begin to KNN Cluster based on NCP"
+        clusters = clustering_knn(nec_dict.values(), k)
+    elif type_alg == 'kmember':
+        print "Begin to K-Member Cluster based on NCP"
+        clusters = clustering_kmember(nec_dict.values(), k)
+    elif type_alg == 'oka':
+        print "Begin to OKA Cluster based on NCP"
+        clusters = clustering_oka(nec_dict.values(), k)
+    else:
+        print "Please choose merge algorithm types"
+        print "knn | kmember | oka"
+        return (0, (0, 0))
+    rtime = float(time.time() - start_time)
+    ncp = 0.0
+    # pdb.set_trace()
+    for cluster in clusters:
+        final_result = []
+        for i in range(len(cluster)):
+            # do not forget to add SA!!!
+            final_result.append(cluster.gen_result + [cluster.member[i][-1]])
+        result.extend(final_result)
+        ncp += cluster.information_loss
+    ncp /= LEN_DATA
+    ncp /= QI_LEN
+    ncp *= 100
+    if __DEBUG:
+        print "NCP=", ncp
+    if len(result) != len(data):
+        print "Record lost"
+        pdb.set_trace()
+    return (result, (ncp, rtime))

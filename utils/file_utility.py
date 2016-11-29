@@ -3,8 +3,8 @@ import os, shutil
 
 
 def ftp_upload(filename, filepath):
-    print "Begin Upload File to FTP"
-    ftpfile = open("ftp",'rU')
+    print "Begin Upload " + filename + " to FTP"
+    ftpfile = open("ftp", 'rU')
     ftp = ftpfile.read().strip().split(' ')
     # print ftp
     session = ftplib.FTP(ftp[0], ftp[1], ftp[2])
@@ -18,7 +18,7 @@ def ftp_upload(filename, filepath):
 
 
 def ftp_download(filename, filepath, flag=True):
-    print "Begin Download File to FTP"
+    print "Begin Download " + filename + " from FTP Server"
     ftpfile = open("ftp", 'rU')
     ftp = ftpfile.read().strip().split(' ')
     # print ftp
@@ -41,7 +41,7 @@ def ftp_download(filename, filepath, flag=True):
 
 def clear_dir(path):
     for file in os.listdir(path):
-        if '__init__' in file:
+        if '__init__' in file or 'md' in file:
             continue
         file_path = os.path.join(path, file)
         # print file_path

@@ -48,14 +48,20 @@ My Implementation is based on Python 2.7 (not Python 3.0). Please make sure your
 	# default eval
 	['dataset', 'algorithm', 'eval', 'k']
 	# normal eval
-	['dataset', 'algorithm', 'eval', 'k', 'qi', 'data']
+	['dataset', 'algorithm', 'eval', 'k', 'd', 'data']
+	# algorithms:
+	# High: Semi-Partition, NEC_k-member, NEC_OKA
+	# Missing: KAIM, Enhanced-Mondrian, Semi-Partition-Incomplete
+	# RT: APA, PAA, 1M-Generalization
+	# dataset:
+	# adult.data, informs.data, musk.data
 	
 7) JSON for PPDPES
 
     # anon JSON
-	{"anon":{"k":10, "data": 1000, "qi":[1,2,3]}}
+	{"anon":{"k":10, "data": 1000, "d":[1,2,3]}}
     #eval JSON
-	{"eval":["k","qi","data"]}
+	{"eval":["k", "d", "data"]}
 
 
 ## For more information:

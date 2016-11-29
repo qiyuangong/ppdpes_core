@@ -33,15 +33,18 @@
 # ***********************************
 
 
-import sys, copy, random, cProfile
+import sys, copy, random, cProfile, ast
 import json
 import pdb
+
 try:
     from algorithm.semi_partition import semi_partition
     from algorithm.semi_partition_missing import semi_partition_missing
     from algorithm.mondrian import mondrian
+    from algorithm.KAIM import anon_kaim
+    from algorithm.mondrian_missing import mondrian_split_missing
     from algorithm.clustering_based_k_anon import anon_k_member, anon_k_nn
-    from algorithm.Separation_Gen import Separation_Gen
+    from algorithm.NEC_based_Anon import NEC_k_member, NEC_OKA
     from algorithm.PAA import PAA
     from algorithm.APA import APA
     from algorithm.m_generalization import m_generalization
@@ -50,31 +53,23 @@ except ImportError:
     from .algorithm.semi_partition import semi_partition
     from .algorithm.semi_partition_missing import semi_partition_missing
     from .algorithm.mondrian import mondrian
+    from .algorithm.KAIM import anon_kaim
     from .algorithm.clustering_based_k_anon import anon_k_member, anon_k_nn
-    from .algorithm.NEC_based_Anon import NEC_based_Anon
-    from .algorithm.Separation_Gen import Separation_Gen
+    from .algorithm.NEC_based_Anon import NEC_k_member, NEC_OKA
     from .algorithm.m_generalization import m_generalization
     from .algorithm.PAA import PAA
     from .algorithm.anatomize import anatomize
 try:
     from utils.file_utility import ftp_download, clear_dir
-    from utils.read_adult_data import read_data as read_adult
-    from utils.read_adult_data import read_tree as read_adult_tree
-    from utils.read_informs_data import read_data as read_informs
-    from utils.read_informs_data import read_tree as read_informs_tree
-    from utils.read_musk_data import read_data as read_musk
-    from utils.read_musk_data import read_tree as read_musk_tree
+    from utils.read_microdata import read_data
+    from utils.read_microdata import read_tree
 except ImportError:
     from .utils.file_utility import ftp_download
-    from .utils.read_adult_data import read_data as read_adult
-    from .utils.read_adult_data import read_tree as read_adult_tree
-    from .utils.read_informs_data import read_data as read_informs
-    from .utils.read_informs_data import read_tree as read_informs_tree
-    from .utils.read_musk_data import read_data as read_musk
-    from .utils.read_musk_data import read_tree as read_musk_tree
+    from .utils.read_microdata import read_data
+    from .utils.read_microdata import read_tree
+
 
 __DEBUG = True
-DATA_SELECT = 'i'
 DEFAULT_K = 10
 # sys.setrecursionlimit(50000)
 
@@ -287,90 +282,111 @@ def are_1m():
     pass
 
 
+def clear_tmp_files():
+    # clear datasets dand tmp
+    clear_dir('data/')
+    clear_dir('gh/')
+    clear_dir('tmp/')
+
+
+def algorithm_selection(alg_str):
+    # choose algorithm
+    if alg_str == 'Mondrian':
+        print "Mondrian"
+        alg = mondrian
+    elif alg_str == 'Semi-Partition':
+        print "Semi-Partition"
+        alg = semi_partition
+    elif alg_str == 'NEC_OKA':
+        print "NEC_OKA"
+        alg = NEC_OKA
+    elif alg_str == 'NEC_k-member':
+        print "NEC_k-member"
+        alg = NEC_k_member
+    elif alg_str == 'KAIM':
+        print "KAIM"
+        alg = anon_kaim
+    if alg_str == 'Ehanced-Mondrian':
+        print "Ehanced-Mondrian"
+        alg = mondrian_split_missing
+    elif alg_str == 'Semi-Partition-Incomplete':
+        print "Semi-Partition-Incomplete"
+        alg = semi_partition_missing
+    elif alg_str == 'APA':
+        RT = True
+        print "APA"
+        alg = APA
+    elif alg_str == 'PAA':
+        RT = True
+        print "PAA"
+        alg = PAA
+    elif alg_str == '1M-Generlization':
+        RT = True
+        print "1:M-Generlization"
+        alg = m_generalization
+    else:
+        print "Mondrian"
+        alg = mondrian
+    print '#' * 30
+    return alg
+
+
+def dataset_handle(data_name, qi_index=None, is_cat=None, status=(0, 0, 0)):
+    # Download data
+    print data_name
+    name = data_name.split('.')[0]
+    ftp_download(data_name, 'data/')
+    # gh download
+    if qi_index is None:
+        ftp_download(name + '_', 'gh/', False)
+        qi_index = [0, 1, 2]
+        is_cat = [0, 0, 0]
+    else:
+        for index, value in enumerate(qi_index):
+            if is_cat[index] == 1:
+                # download gh
+                ftp_download(name + '_' + str(value), 'gh/', False)
+        # rt sa
+        if status[2] == 1:
+            ftp_download(name + '_sa', 'gh/', False)
+    # read data
+    data = read_data(data_name, qi_index, is_cat, status=status)
+    att_trees = read_tree(name, qi_index, is_cat, status[2])
+    return data, att_trees
+
+
 def universe_anonymizer(argv):
     print argv
+    # if __DEBUG:
+    #     print sys.argv
+    clear_tmp_files()
     LEN_ARGV = len(argv)
     return_dict = {}
     k = 10
     # get value from argv
     try:
-        DATA_SELECT = argv[0]
-        ALG_SELECT = argv[1]
+        data_str = argv[0]
+        alg_str = argv[1]
+        qi_index = ast.literal_eval(argv[2])
+        qi_index = map(int, qi_index)
+        is_cat = ast.literal_eval(argv[3])
+        is_cat = map(int, is_cat)
+        # sa_index = int(argv[4])
+        # status = ast.literal_eval(argv[4])
+        status = (0, 0, 0)
     except:
-        DATA_SELECT = 'a'
-        ALG_SELECT = 'm'
+        data_str = 'adult.data'
+        alg_str = 'Mondrain'
     # read dataset
-    if DATA_SELECT == 'a':
-        print "Adult data"
-        # dataset
-        ftp_download('adult.data', 'data/')
-        # gh
-        ftp_download('adult_', 'gh/', False)
-        RAW_DATA = read_adult()
-        ATT_TREES = read_adult_tree()
-    elif DATA_SELECT == 'i':
-        print "INFORMS data"
-        # dataset
-        ftp_download('informs.data', 'data/')
-        # gh
-        ftp_download('informs_', 'gh/', False)
-        RAW_DATA = read_informs()
-        ATT_TREES = read_informs_tree(1, [1, 2, 3])
-    elif DATA_SELECT == 'm':
-        print "Musk data"
-        # dataset
-        ftp_download('musk.data', 'data/')
-        # gh
-        ftp_download('musk_', 'gh/', False)
-        RAW_DATA = read_musk()
-        ATT_TREES = read_musk_tree()
-    else:
-        print "Adult data"
-        # dataset
-        ftp_download('adult.data', 'data/')
-        # gh
-        ftp_download('adult_', 'gh/', False)
-        RAW_DATA = read_adult()
-        ATT_TREES = read_adult_tree()
-    if __DEBUG:
-        print sys.argv
-    print '#' * 30
-    RT = False
-    # choose algorithm
-    if ALG_SELECT == 'm':
-        print "Mondrian"
-        ALG = mondrian
-    elif ALG_SELECT == 's':
-        print "Semi-Partition"
-        ALG = semi_partition
-    elif ALG_SELECT == 'knn':
-        print "k-nn"
-        ALG = anon_k_nn
-    elif ALG_SELECT == 'kmember':
-        print "k-member"
-        ALG = anon_k_member
-    elif ALG_SELECT == 'apa':
-        RT = True
-        print "APA"
-        ALG = APA
-    elif ALG_SELECT == 'paa':
-        RT = True
-        print "PAA"
-        ALG = PAA
-    elif ALG_SELECT == '1m':
-        RT = True
-        print "1:M-Generlization"
-        ALG = m_generalization
-    else:
-        print "Mondrian"
-        ALG = mondrian
+    alg = algorithm_selection(alg_str)
+    data, att_trees = dataset_handle(data_str, qi_index, is_cat)
     print '#' * 30
     if LEN_ARGV == 2:
-        return_dict = get_result_one(ALG, ATT_TREES, RAW_DATA)
+        return_dict = get_result_one(alg, att_trees, data)
     elif LEN_ARGV > 2:
-        if argv[2] == 'anon':
+        if argv[4] == 'anon':
             print "Begin Anon on Specific parameters"
-            parameter = argv[3]
+            parameter = argv[5]
             if isinstance(parameter, str):
                 parameter = parameter.replace("'", "\"")
                 parameter = json.loads(parameter)
@@ -381,24 +397,24 @@ def universe_anonymizer(argv):
             try:
                 data_size = int(parameter['data'])
             except KeyError:
-                data_size = len(RAW_DATA)
+                data_size = len(data)
             try:
-                qi_index = parameter['qi']
+                qi_index = parameter['d']
             except KeyError:
                 qi_index = None
-            return_dict = get_result_one(ALG, ATT_TREES, RAW_DATA[:data_size], k, qi_index, RT)
+            return_dict = get_result_one(alg, att_trees, data[:data_size], k, qi_index, status[-1])
         else:
-            for i in range(3, LEN_ARGV):
+            for i in range(5, LEN_ARGV):
                 FLAG = argv[i]
                 print "Begin Eval " + FLAG
                 if FLAG == 'k':
-                    return_dict[FLAG] = get_result_k(ALG, ATT_TREES, RAW_DATA)
-                elif FLAG == 'qi':
-                    return_dict[FLAG] = get_result_qi(ALG, ATT_TREES, RAW_DATA)
+                    return_dict[FLAG] = get_result_k(alg, att_trees, data)
+                elif FLAG == 'd':
+                    return_dict[FLAG] = get_result_qi(alg, att_trees, data)
                 elif FLAG == 'data':
-                    return_dict[FLAG] = get_result_dataset(ALG, ATT_TREES, RAW_DATA)
-                elif FLAG == 'missing':
-                    return_dict[FLAG] = get_result_missing(ALG, ATT_TREES, RAW_DATA)
+                    return_dict[FLAG] = get_result_dataset(alg, att_trees, data)
+                elif FLAG == '*':
+                    return_dict[FLAG] = get_result_missing(alg, att_trees, data)
                 else:
                     print "Usage: python anonymizer [a | i | m] [s | m | knn | kmember] [k | qi | data | missing]"
                     print "a: adult dataset, i: INFORMS dataset, m: musk dataset"
@@ -412,7 +428,4 @@ def universe_anonymizer(argv):
 if __name__ == '__main__':
     result, eval_r = universe_anonymizer(sys.argv[1:])
     pdb.set_trace()
-    # clear datasets dand tmp
-    # clear_dir('data/')
-    # clear_dir('gh/')
-    # clear_dir('tmp/')
+    clear_tmp_files()

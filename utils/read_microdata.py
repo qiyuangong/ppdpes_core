@@ -11,7 +11,7 @@ except ImportError:
 __DEBUG = False
 
 
-def read_tree(qi_index, is_cat, name, is_rt=False):
+def read_tree(name, qi_index, is_cat, is_rt=False):
     """read tree from data/tree_*.txt, store them in att_tree
     """
     att_names = []
@@ -19,7 +19,7 @@ def read_tree(qi_index, is_cat, name, is_rt=False):
     for t in qi_index:
         att_names.append(name + '_' + str(t))
     for i in range(len(att_names)):
-        if is_cat[i]:
+        if is_cat[i] == 1:
             att_trees.append(read_tree_file(att_names[i], name))
         else:
             att_trees.append(read_pickle_file(att_names[i], name))
@@ -75,10 +75,15 @@ def read_pickle_file(att_name, name):
 #############################################################
 
 
-def read_data(qi_index, is_cat, sa_index, name, missing=False, is_rt=False):
+def read_data(data_name, qi_index, is_cat, sa_index=-1, status=(0, 0, 0)):
     """
     read microdata for *.txt and return read data
     """
+    # data type
+    is_high = status[0] == 1
+    is_missing = status[1] == 1
+    is_rt = status[2] == 1
+    name = data_name.split('.')[0]
     QI_num = len(qi_index)
     data = []
     numeric_dict = []
@@ -86,14 +91,13 @@ def read_data(qi_index, is_cat, sa_index, name, missing=False, is_rt=False):
         numeric_dict.append(dict())
     # oder categorical attributes in intuitive order
     # here, we use the appear number
-    data_file = open('data/' + name + '.data', 'rU')
+    data_file = open('data/' + data_name, 'rU')
     for line in data_file:
         line = line.strip()
         # remove empty and incomplete lines
-        # only 30162 records will be kept
         if len(line) == 0:
             continue
-        if missing is False and '?' in line:
+        if is_missing == 0 and ('?' in line or '*' in line):
             continue
         # remove double spaces
         line = line.replace(' ', '')
@@ -101,7 +105,7 @@ def read_data(qi_index, is_cat, sa_index, name, missing=False, is_rt=False):
         ltemp = []
         for i in range(QI_num):
             index = qi_index[i]
-            if is_cat[i] is False:
+            if is_cat[i] == 0:
                 try:
                     numeric_dict[i][temp[index]] += 1
                 except KeyError:
@@ -110,10 +114,12 @@ def read_data(qi_index, is_cat, sa_index, name, missing=False, is_rt=False):
         if is_rt:
             # get set-valued data
             ltemp.append(temp[sa_index].split(';'))
+        else:
+            ltemp.append(temp[sa_index])
         data.append(ltemp)
     # pickle numeric attributes and get NumRange
     for i in range(QI_num):
-        if is_cat[i] is False:
+        if is_cat[i] == 0:
             static_file = open('tmp/' + name + '_' + str(qi_index[i]) + '_static.pickle', 'wb')
             sort_value = list(numeric_dict[i].keys())
             sort_value.sort(cmp=cmp_str)
