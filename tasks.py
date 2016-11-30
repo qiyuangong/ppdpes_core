@@ -1,7 +1,7 @@
 from celery import Celery, shared_task
 from celery.task.http import URL
 from anonymizer import universe_anonymizer
-from utils.file_utility import ftp_upload, remove_file
+from utils.file_utility import ftp_upload, remove_file, clear_tmp_files
 import json
 import urllib
 
@@ -28,6 +28,7 @@ def eval(task_id, key, eval_parameters):
     # end_time = datetime.datetime.now()
     URL(CALL_BACK_URL).get_async(task_id=task_id, result=json.dumps(result))
     # return json.dumps(result), end_time
+    clear_tmp_files()
 
 
 @shared_task(name='PPDP.tasks.anon')
@@ -58,5 +59,6 @@ def anon(task_id, key, anon_parameters):
         anon_r['time'] = round(eval_r[2], 2)
     URL(CALL_BACK_URL).get_async(task_id=task_id, result=json.dumps(anon_r))
     remove_file(str(key) + ".txt", 'tmp/')
+    clear_tmp_files()
     # anon_result = Anon_Result.objects.get(pk=anon_id)
     # return json.dumps(anon_r), end_time

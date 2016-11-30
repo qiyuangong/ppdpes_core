@@ -61,5 +61,12 @@ def remove_file(file, path):
     except Exception as e:
         print e
 
+
+def clear_tmp_files():
+    # clear datasets dand tmp
+    clear_dir('data/')
+    clear_dir('gh/')
+    clear_dir('tmp/')
+
 if __name__ == '__main__':
     ftp_upload('README.md', '')

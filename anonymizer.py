@@ -61,11 +61,11 @@ except ImportError:
     from .algorithm.PAA import PAA
     from .algorithm.anatomize import anatomize
 try:
-    from utils.file_utility import ftp_download, clear_dir
+    from utils.file_utility import ftp_download, clear_tmp_files
     from utils.read_microdata import read_data
     from utils.read_microdata import read_tree
 except ImportError:
-    from .utils.file_utility import ftp_download
+    from .utils.file_utility import ftp_download, clear_tmp_files
     from .utils.read_microdata import read_data
     from .utils.read_microdata import read_tree
 
@@ -347,13 +347,6 @@ def are_1m():
     are for 1:M dataset
     """
     pass
-
-
-def clear_tmp_files():
-    # clear datasets dand tmp
-    clear_dir('data/')
-    clear_dir('gh/')
-    clear_dir('tmp/')
 
 
 def algorithm_selection(alg_str):
