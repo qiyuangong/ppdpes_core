@@ -395,7 +395,7 @@ def init(att_trees, data, k, QI_num=-1):
     QI_RANGE = []
 
 
-def mondrian(att_trees, data, k, QI_num=-1):
+def enhanced_mondrian(att_trees, data, k, QI_num=-1):
     """
     Mondrian for k-anonymity.
     This fuction support both numeric values and categoric values.
@@ -432,7 +432,7 @@ def mondrian(att_trees, data, k, QI_num=-1):
         for record in partition.member:
             result.append(temp[:] + [record[-1]])
             for i in range(QI_LEN):
-                if record[i] == '?' or record[i] == '*':
+                if record[i] == '*':
                     raw_missing += 1
                     continue
                 else:
@@ -475,7 +475,7 @@ def mondrian_split_missing(att_trees, data, k, QI_num=-1):
     result = []
     eval_result = [0, 0, 0]
     for record in data:
-        if '?' in record:
+        if '*' in record:
             missing_data.append(record)
         else:
             remain_data.append(record)
@@ -502,7 +502,7 @@ def mondrian_delete_missing(att_trees, data, k, QI_num=-1):
     num_removed_record = 0
     eval_result = [0, 0, 0]
     for record in data:
-        if '?' in record:
+        if '*' in record:
             num_removed_record += 1
             continue
         else:

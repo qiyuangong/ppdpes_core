@@ -15,7 +15,7 @@ import pdb
 # Musk: [other(0, 1), f1-f166, class]
 # f1-f166 as QID
 # class as SA
-QI_INDEX = range(2,168)
+QI_INDEX = range(2, 168)
 SA_INDEX = -1
 __DEBUG = False
 
@@ -78,4 +78,3 @@ def read_pickle_file(att_name):
     static_file.close()
     result = NumRange(sort_value, numeric_dict)
     return result
-

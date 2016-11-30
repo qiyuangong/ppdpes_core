@@ -1,4 +1,5 @@
 import pickle
+import pdb
 try:
     from models.gentree import GenTree
     from models.numrange import NumRange
@@ -9,9 +10,10 @@ except ImportError:
     from ..utils.utility import cmp_str
 
 __DEBUG = False
+MISSING_TAG = ['*', '?']
 
 
-def read_tree(name, qi_index, is_cat, is_rt=False):
+def read_tree(name, qi_index, is_cat, is_rt=0):
     """read tree from data/tree_*.txt, store them in att_tree
     """
     att_names = []
@@ -23,7 +25,7 @@ def read_tree(name, qi_index, is_cat, is_rt=False):
             att_trees.append(read_tree_file(att_names[i], name))
         else:
             att_trees.append(read_pickle_file(att_names[i], name))
-    if is_rt:
+    if is_rt == 1:
         # read sa gh
         att_trees.append(read_tree_file(name + '_sa', name))
     return att_trees
@@ -80,9 +82,7 @@ def read_data(data_name, qi_index, is_cat, sa_index=-1, status=(0, 0, 0)):
     read microdata for *.txt and return read data
     """
     # data type
-    is_high = status[0] == 1
-    is_missing = status[1] == 1
-    is_rt = status[2] == 1
+    is_high, is_missing, is_rt = status
     name = data_name.split('.')[0]
     QI_num = len(qi_index)
     data = []
@@ -97,8 +97,15 @@ def read_data(data_name, qi_index, is_cat, sa_index=-1, status=(0, 0, 0)):
         # remove empty and incomplete lines
         if len(line) == 0:
             continue
-        if is_missing == 0 and ('?' in line or '*' in line):
-            continue
+        if is_missing == 0:
+            flag = True
+            for v in MISSING_TAG:
+                if v in line:
+                    break
+            else:
+                flag = False
+            if flag:
+                continue
         # remove double spaces
         line = line.replace(' ', '')
         temp = line.split(',')
@@ -110,8 +117,13 @@ def read_data(data_name, qi_index, is_cat, sa_index=-1, status=(0, 0, 0)):
                     numeric_dict[i][temp[index]] += 1
                 except KeyError:
                     numeric_dict[i][temp[index]] = 1
-            ltemp.append(temp[index])
-        if is_rt:
+                except:
+                    pdb.set_trace()
+            if temp[index] in MISSING_TAG:
+                ltemp.append('*')
+            else:
+                ltemp.append(temp[index])
+        if is_rt == 1:
             # get set-valued data
             ltemp.append(temp[sa_index].split(';'))
         else:

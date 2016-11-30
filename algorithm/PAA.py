@@ -7,7 +7,7 @@ import pdb
 _DEBUG = True
 
 
-def PAA(att_tree, data, K=10, L=5):
+def PAA(att_tree, data, k=10, l=5):
     """Using Partition to anonymize SA (transaction) partition,
     while applying Anatomize to separate QID and SA
     """
@@ -17,7 +17,7 @@ def PAA(att_tree, data, K=10, L=5):
     print "size of dataset %d" % len(data)
     result = []
     trans = [t[-1] for t in data]
-    trans_set = partition(att_tree, trans, K)
+    trans_set = partition(att_tree, trans, k)
     grouped_data = []
     for ttemp in trans_set:
         (index_list, tran_value) = ttemp
@@ -30,7 +30,7 @@ def PAA(att_tree, data, K=10, L=5):
             gtemp.append(temp)
         grouped_data.append(gtemp)
     print "Begin Anatomy"
-    grouped_result = anatomize(grouped_data, L)
+    grouped_result = anatomize(grouped_data, l)
     rtime = time.time() - start_time
     print("--- %s seconds ---" % rtime)
     # transform anatmoized data to relational

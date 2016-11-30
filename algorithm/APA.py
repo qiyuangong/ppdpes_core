@@ -14,25 +14,25 @@ import pdb
 _DEBUG = True
 
 
-def check_diversity(data, group, L):
+def check_diversity(data, group, l):
     """check if group satisfy l-diversity
     """
     SA_values = set()
     for index in group:
         str_value = list_to_str(data[index][-1], cmp)
         SA_values.add(str_value)
-    if len(SA_values) >= L:
+    if len(SA_values) >= l:
         return True
     return False
 
 
-def mergeable(data, group1, group2, L):
+def mergeable(data, group1, group2, l):
     """check if group1 can merge with group2 to achieve l-diversity
     """
-    return check_diversity(data, (group1 + group2), L)
+    return check_diversity(data, (group1 + group2), l)
 
 
-def APA(att_tree, data, K=10, L=5):
+def APA(att_tree, data, k=10, l=5):
     """Using Partition to anonymize SA (transaction) partition,
     while applying Anatomize to separate QID and SA
     """
@@ -45,10 +45,10 @@ def APA(att_tree, data, K=10, L=5):
     print "size of dataset %d" % len(data)
     # Begin Anatomy
     print "Begin Anatomy"
-    anatomy_index = anatomize(data, L)
+    anatomy_index = anatomize(data, l)
     # Begin Partition
     trans = [t[-1] for t in data]
-    trans_set = partition(att_tree, trans, K)
+    trans_set = partition(att_tree, trans, k)
     for ttemp in trans_set:
         (index_list, tran_value) = ttemp
         for t in index_list:
@@ -58,14 +58,14 @@ def APA(att_tree, data, K=10, L=5):
     residue = []
     grouped_index = []
     for group in anatomy_index:
-        if check_diversity(data, group, L):
+        if check_diversity(data, group, l):
             grouped_index.append(group[:])
         else:
             residue.append(group[:])
     while len(residue) > 0:
         g = residue.pop()
         for index, group in enumerate(residue):
-            if mergeable(data, g, group, L):
+            if mergeable(data, g, group, l):
                 g = g + group
                 grouped_index.append(g)
                 residue.pop(index)

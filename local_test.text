@@ -1,0 +1,34 @@
+
+
+# Anon
+## High
+
+python anonymizer.py musk.data Semi-Partition '[3, 4, 6, 13, 15, 16]'  '[0, 0, 0, 0, 0, 0]' '[1, 0, 0]' anon "{'d': [1, 2, 3], 'k': 10, 'data': 1000}"
+python anonymizer.py musk.data NEC_OKA '[3, 4, 6, 13, 15, 16]' '[0, 0, 0, 0, 0, 0]' '[1, 0, 0]' anon "{'d': [1, 2, 3], 'k': 10, 'data': 1000}"
+
+## Missing
+
+python anonymizer.py adult.data KAIM '[0, 1, 4, 5, 6, 7, 8, 9, 13]'  '[0, 1, 0, 1, 1, 1, 1, 1, 1]' '[0, 1, 0]' anon "{'d': [1, 2, 3], 'k': 10, 'data': 1000}"
+python anonymizer.py adult.data Enhanced-Mondrian '[0, 1, 4, 5, 6, 7, 8, 9, 13]'  '[0, 1, 0, 1, 1, 1, 1, 1, 1]' '[0, 1, 0]' anon "{'d': [1, 2, 3], 'k': 10, 'data': 1000}"
+python anonymizer.py adult.data Semi-Partition-Incomplete '[0, 1, 4, 5, 6, 7, 8, 9, 13]'  '[0, 1, 0, 1, 1, 1, 1, 1, 1]' '[0, 1, 0]' anon "{'d': [1, 2, 3], 'k': 10, 'data': 1000}"
+
+## RT
+python anonymizer.py informs.data 1M-Generalization '[3, 4, 6, 13, 15, 16]'  '[1, 1, 1, 1, 0, 1]' '[0, 0, 1]' anon "{'d': [1, 2, 3], 'k': 10, 'data': 1000}"
+python anonymizer.py informs.data PAA '[3, 4, 6, 13, 15, 16]'  '[1, 1, 1, 1, 0, 1]' '[0, 0, 1]' anon "{'d': [1, 2, 3], 'k': 10, 'data': 1000}"
+
+
+# Eval
+## High
+
+python anonymizer.py musk.data Semi-Partition '[3, 4, 6, 13, 15, 16]'  '[0, 0, 0, 0, 0, 0]' '[1, 0, 0]' eval "{'d': [1, 2, 3], 'k': 10, 'data': 1000}"
+python anonymizer.py musk.data NEC_OKA '[3, 4, 6, 13, 15, 16]' '[0, 0, 0, 0, 0, 0]' '[1, 0, 0]' eval k d qi
+
+## Missing
+
+python anonymizer.py adult.data KAIM '[0, 1, 4, 5, 6, 7, 8, 9, 13]'  '[0, 1, 0, 1, 1, 1, 1, 1, 1]' '[0, 1, 0]' eval k d '*'
+python anonymizer.py adult.data Enhanced-Mondrian '[0, 1, 4, 5, 6, 7, 8, 9, 13]'  '[0, 1, 0, 1, 1, 1, 1, 1, 1]' '[0, 1, 0]' eval k d '*'
+python anonymizer.py adult.data Semi-Partition-Incomplete '[0, 1, 4, 5, 6, 7, 8, 9, 13]'  '[0, 1, 0, 1, 1, 1, 1, 1, 1]' '[0, 1, 0]' eval k d '*'
+
+## RT
+python anonymizer.py informs.data 1M-Generalization '[3, 4, 6, 13, 15, 16]'  '[1, 1, 1, 1, 0, 1]' '[0, 0, 1]' eval k l data
+python anonymizer.py informs.data PAA '[3, 4, 6, 13, 15, 16]'  '[1, 1, 1, 1, 0, 1]' '[0, 0, 1]' eval k d

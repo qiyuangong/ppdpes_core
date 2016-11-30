@@ -361,6 +361,7 @@ def init(att_trees, data, QI_num=-1):
             IS_CAT.append(True)
             QI_RANGE.append(len(ATT_TREES[i]['*']))
 
+
 def get_support(data):
     # leaf support
     for record in data:
