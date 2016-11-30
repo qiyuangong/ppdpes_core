@@ -474,7 +474,7 @@ def universe_anonymizer(argv):
             try:
                 d_index = parameter['d']
             except KeyError:
-                qi_index = None
+                d_index = None
             return_dict = get_result_one(alg, att_trees, data[:data_size], k, d_index, status[-1])
         else:
             for i in range(current_pos + 1, LEN_ARGV):

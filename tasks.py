@@ -49,8 +49,13 @@ def anon(task_id, key, anon_parameters):
     ftp_upload(str(key) + ".txt", "tmp/")
     anon_r = dict()
     anon_r['url'] = FTP_PREFIX + urllib.quote(str(key) + ".txt")
-    anon_r['ncp'] = eval_r[0]
-    anon_r['time'] = eval_r[1]
+    if len(eval_r) == 2:
+        anon_r['ncp'] = round(eval_r[0], 2)
+        anon_r['time'] = round(eval_r[1], 2)
+    else:
+        anon_r['ncp'] = round(eval_r[0], 2)
+        anon_r['tncp'] = round(eval_r[1], 2)
+        anon_r['time'] = round(eval_r[2], 2)
     URL(CALL_BACK_URL).get_async(task_id=task_id, result=json.dumps(anon_r))
     remove_file(str(key) + ".txt", 'tmp/')
     # anon_result = Anon_Result.objects.get(pk=anon_id)
